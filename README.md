@@ -1,0 +1,7 @@
+# ProyectoDesarrollo
+
+- EMILIO SERRATO
+- JOSE RUIZ
+- MARIO GARCIA
+- ISMAEL
+- OMAR
