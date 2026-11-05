@@ -6,4 +6,6 @@ public interface CitaRepositorio {
     void guardar(Cita cita);
 
     List<CitaConCliente> listarConCliente();
+
+    void eliminar(int idCita);
 }
