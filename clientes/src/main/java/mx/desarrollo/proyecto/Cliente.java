@@ -1,4 +1,4 @@
-package mx.desarrollo.examen;
+package mx.desarrollo.proyecto;
 
 public class Cliente {
     private int idCliente;
@@ -28,7 +28,7 @@ public class Cliente {
         return nombreCliente;
     }
 
-    public void setNombreCliente(String nombre) {
+    public void setNombreCliente(String nombreCliente) {
         this.nombreCliente = nombreCliente;
     }
 
