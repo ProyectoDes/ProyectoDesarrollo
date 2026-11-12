@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citas - Bambú y Brillo</title>
+</head>
+<body>
+
+  <!-- Pantalla 04 · Listado de citas -->
+
+  <header>
+    <h1>Citas</h1>
+    <p>Agenda por fecha y hora</p>
+  </header>
+
+  <main>
+    <form id="form-fecha">
+      <label for="fecha-agenda">Lun, 2 nov 2026</label>
+      <input type="date" id="fecha-agenda" name="fecha" value="2026-11-02">
+    </form>
+
+    <section id="citas">
+      <p id="total-citas">3 citas</p>
+
+      <ul id="lista-citas">
+        <li>
+          <p><time>10:00 – 11:00</time> <time datetime="2026-11-02">2 nov 2026</time></p>
+          <strong>Ana Martínez</strong>
+          <span>Limpieza facial</span>
+          <a href="editar-cita.html?id=1">Editar</a>
+          <a href="confirmar-eliminar-cita.html?id=1">Eliminar</a>
+        </li>
+        <li>
+          <p><time>12:00 – 12:45</time> <time datetime="2026-11-02">2 nov 2026</time></p>
+          <strong>Lucía Torres</strong>
+          <span>Manicure</span>
+          <a href="editar-cita.html?id=2">Editar</a>
+          <a href="confirmar-eliminar-cita.html?id=2">Eliminar</a>
+        </li>
+        <li>
+          <p><time>16:00 – 17:00</time> <time datetime="2026-11-02">2 nov 2026</time></p>
+          <strong>Marta López</strong>
+          <span>Masaje relajante</span>
+          <a href="editar-cita.html?id=3">Editar</a>
+          <a href="confirmar-eliminar-cita.html?id=3">Eliminar</a>
+        </li>
+      </ul>
+    </section>
+
+    <a href="registrar-cita.html" id="btn-nueva-cita">+ Nueva cita</a>
+  </main>
+
+  <nav id="menu-inferior">
+    <ul>
+      <li><a href="inicio.html">Inicio</a></li>
+      <li><a href="citas.html" aria-current="page">Citas</a></li>
+      <li><a href="clientes.html">Clientes</a></li>
+      <li><a href="inventario.html">Inventario</a></li>
+      <li><a href="mas.html">Más</a></li>
+    </ul>
+  </nav>
+
+</body>
+</html>

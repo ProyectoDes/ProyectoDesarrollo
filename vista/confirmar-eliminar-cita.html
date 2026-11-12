@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eliminar cita - Bambú y Brillo</title>
+</head>
+<body>
+
+  <!-- Pantalla 06 · Confirmación eliminar cita -->
+
+  <main>
+    <section id="confirmar-eliminar" role="alertdialog" aria-labelledby="titulo-eliminar" aria-describedby="texto-eliminar">
+      <h1 id="titulo-eliminar">¿Eliminar esta cita?</h1>
+      <p id="texto-eliminar">Se eliminará la cita de <strong>Ana Martínez</strong>. Esta acción no se puede deshacer.</p>
+
+      <div id="resumen-cita">
+        <strong>Limpieza facial</strong>
+        <p><time datetime="2026-11-02">2 nov 2026</time> · 10:00 – 11:00</p>
+      </div>
+
+      <form id="form-eliminar-cita" action="citas.html" method="get">
+        <input type="hidden" id="id-cita" name="id" value="1">
+        <button type="submit" id="btn-confirmar-eliminar">Eliminar</button>
+      </form>
+
+      <a href="citas.html" id="btn-cancelar">Cancelar</a>
+    </section>
+  </main>
+
+</body>
+</html>
