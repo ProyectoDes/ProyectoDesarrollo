@@ -16,6 +16,7 @@ import mx.bambuybrillo.entidad.CitaConCliente;
 import mx.bambuybrillo.entidad.ClienteOpcion;
 import mx.bambuybrillo.negocio.ConsultarCitas;
 import mx.bambuybrillo.negocio.EliminarCita;
+import mx.bambuybrillo.negocio.ModificarCita;
 import mx.bambuybrillo.negocio.RegistrarCita;
 
 public class CitasApi {
@@ -26,12 +27,14 @@ public class CitasApi {
     private final RegistrarCita registrarCita;
     private final ConsultarCitas consultarCitas;
     private final EliminarCita eliminarCita;
+    private final ModificarCita modificarCita;
 
     public CitasApi(RegistrarCita registrarCita, ConsultarCitas consultarCitas,
-                    EliminarCita eliminarCita) {
+                    EliminarCita eliminarCita, ModificarCita modificarCita) {
         this.registrarCita = registrarCita;
         this.consultarCitas = consultarCitas;
         this.eliminarCita = eliminarCita;
+        this.modificarCita = modificarCita;
     }
 
     public void registrarRutas(HttpServer servidor) {
@@ -66,11 +69,14 @@ public class CitasApi {
         try {
             String metodo = ex.getRequestMethod();
             String ruta = ex.getRequestURI().getPath();
+            boolean conId = ruta.startsWith(RUTA_CITAS + "/");
             if ("GET".equals(metodo) && RUTA_CITAS.equals(ruta)) {
                 listar(ex);
             } else if ("POST".equals(metodo) && RUTA_CITAS.equals(ruta)) {
                 crear(ex);
-            } else if ("DELETE".equals(metodo) && ruta.startsWith(RUTA_CITAS + "/")) {
+            } else if ("PUT".equals(metodo) && conId) {
+                actualizar(ex, ruta);
+            } else if ("DELETE".equals(metodo) && conId) {
                 borrar(ex, ruta);
             } else {
                 responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
@@ -101,8 +107,27 @@ public class CitasApi {
     }
 
     private void crear(HttpExchange ex) throws IOException {
-        Map<String, String> datos = leerFormulario(ex);
+        Cita cita = construirCita(leerFormulario(ex));
+        String mensaje = registrarCita.registrar(cita);
+        responder(ex, 201, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+    }
 
+    private void actualizar(HttpExchange ex, String ruta) throws IOException {
+        int id = leerIdDeRuta(ruta, "La cita a modificar no existe.");
+        Cita cita = construirCita(leerFormulario(ex));
+        cita.setIdCita(id);
+        String mensaje = modificarCita.modificar(cita);
+        responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+    }
+
+    private void borrar(HttpExchange ex, String ruta) throws IOException {
+        int id = leerIdDeRuta(ruta, "La cita a eliminar no existe.");
+        String mensaje = eliminarCita.eliminar(id);
+        responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+    }
+
+    // Arma la cita con los campos del formulario (sirve para registrar y para editar)
+    private Cita construirCita(Map<String, String> datos) {
         String servicio = datos.getOrDefault("servicio", "").trim();
         String personalizado = datos.getOrDefault("servicio_personalizado", "").trim();
         if (!personalizado.isEmpty()) {
@@ -115,20 +140,15 @@ public class CitasApi {
         cita.setHoraInicio(datos.getOrDefault("hora_inicio", "").trim());
         cita.setHoraFin(datos.getOrDefault("hora_fin", "").trim());
         cita.setServicio(servicio);
-
-        String mensaje = registrarCita.registrar(cita);
-        responder(ex, 201, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+        return cita;
     }
 
-    private void borrar(HttpExchange ex, String ruta) throws IOException {
-        int id;
+    private int leerIdDeRuta(String ruta, String mensajeError) {
         try {
-            id = Integer.parseInt(ruta.substring((RUTA_CITAS + "/").length()));
+            return Integer.parseInt(ruta.substring((RUTA_CITAS + "/").length()));
         } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("La cita a eliminar no existe.");
+            throw new IllegalArgumentException(mensajeError);
         }
-        String mensaje = eliminarCita.eliminar(id);
-        responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
     }
 
     private Map<String, String> leerFormulario(HttpExchange ex) throws IOException {

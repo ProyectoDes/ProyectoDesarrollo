@@ -9,6 +9,8 @@ import mx.bambuybrillo.entidad.ClienteOpcion;
 public interface CitaRepositorio {
     void guardar(Cita cita);
 
+    void actualizar(Cita cita);
+
     List<CitaConCliente> listarConCliente();
 
     void eliminar(int idCita);
