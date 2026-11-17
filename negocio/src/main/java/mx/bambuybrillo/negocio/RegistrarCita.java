@@ -2,6 +2,7 @@ package mx.bambuybrillo.negocio;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 
 import mx.bambuybrillo.entidad.Cita;
@@ -10,6 +11,7 @@ import mx.bambuybrillo.persistencia.CitaRepositorio;
 public class RegistrarCita {
 
     private static final int MAX_SERVICIO = 60;
+    private static final ZoneId ZONA = ZoneId.of("America/Tijuana");   // ← línea nueva
 
     private final CitaRepositorio repositorio;
 
@@ -25,42 +27,45 @@ public class RegistrarCita {
 
     public void validar(Cita cita) {
         if (cita == null) {
-            throw new IllegalArgumentException("Los datos de la cita son obligatorios.");
+            throw new ValidacionException("cita", "Los datos de la cita son obligatorios.");
         }
         if (cita.getIdCliente() <= 0) {
-            throw new IllegalArgumentException("Selecciona un cliente.");
+            throw new ValidacionException("cliente", "Selecciona un cliente.");
         }
         if (!repositorio.existeCliente(cita.getIdCliente())) {
-            throw new IllegalArgumentException("El cliente seleccionado no está registrado.");
+            throw new ValidacionException("cliente", "El cliente seleccionado no está registrado.");
         }
-        leerFecha(cita.getFecha());
-        LocalTime inicio = leerHora(cita.getHoraInicio(), "La hora de inicio");
-        LocalTime fin = leerHora(cita.getHoraFin(), "La hora de fin");
+        LocalDate fecha = leerFecha(cita.getFecha());
+        if (fecha.isBefore(LocalDate.now(ZONA))) {
+            throw new ValidacionException("fecha", "La fecha no puede ser anterior a hoy.");
+        }
+        LocalTime inicio = leerHora(cita.getHoraInicio(), "La hora de inicio", "horaInicio");
+        LocalTime fin = leerHora(cita.getHoraFin(), "La hora de fin", "horaFin");
         if (!fin.isAfter(inicio)) {
-            throw new IllegalArgumentException("La hora de fin debe ser posterior a la hora de inicio.");
+            throw new ValidacionException("horaFin", "La hora de fin debe ser posterior a la hora de inicio.");
         }
         String servicio = cita.getServicio() == null ? "" : cita.getServicio().trim();
         if (servicio.isEmpty()) {
-            throw new IllegalArgumentException("Selecciona o escribe un servicio.");
+            throw new ValidacionException("servicio", "Selecciona o escribe un servicio.");
         }
         if (servicio.length() > MAX_SERVICIO) {
-            throw new IllegalArgumentException("El servicio no puede tener más de 60 caracteres.");
+            throw new ValidacionException("servicio", "El servicio no puede tener más de 60 caracteres.");
         }
     }
 
-    private void leerFecha(String texto) {
+    private LocalDate leerFecha(String texto) {
         try {
-            LocalDate.parse(texto == null ? "" : texto);
+            return LocalDate.parse(texto == null ? "" : texto);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Indica una fecha válida.");
+            throw new ValidacionException("fecha", "Indica una fecha válida.");
         }
     }
 
-    private LocalTime leerHora(String texto, String campo) {
+    private LocalTime leerHora(String texto, String descripcion, String campo) {
         try {
             return LocalTime.parse(texto == null ? "" : texto);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException(campo + " no es válida.");
+            throw new ValidacionException(campo, descripcion + " no es válida.");
         }
     }
 }
