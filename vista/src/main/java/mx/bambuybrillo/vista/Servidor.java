@@ -19,7 +19,7 @@ import mx.bambuybrillo.persistencia.CitaRepositorioPostgres;
 public class Servidor {
 
     private static final int PUERTO = 8080;
-    private static final String PAGINA_INICIAL = "registrar-cita.html";
+    private static final String PAGINA_INICIAL = "inicio.html";
 
     public static void main(String[] args) throws IOException {
         String url = variable("BYB_DB_URL");
