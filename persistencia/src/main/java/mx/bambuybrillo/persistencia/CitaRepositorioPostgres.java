@@ -27,6 +27,10 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
 
     public static final String SQL_ELIMINAR = "DELETE FROM citas WHERE id_cita = ?";
 
+    public static final String SQL_ACTUALIZAR =
+            "UPDATE citas SET id_cliente = ?, fecha = ?::date, hora_inicio = ?::time, "
+                    + "hora_fin = ?::time, servicio = ? WHERE id_cita = ?";
+
     public static final String SQL_LISTAR_CLIENTES =
             "SELECT id_cliente, nombre FROM clientes ORDER BY nombre";
 
@@ -66,6 +70,22 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo guardar la cita.", e);
+        }
+    }
+
+    @Override
+    public void actualizar(Cita cita) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_ACTUALIZAR)) {
+            ps.setInt(1, cita.getIdCliente());
+            ps.setString(2, cita.getFecha());
+            ps.setString(3, cita.getHoraInicio());
+            ps.setString(4, cita.getHoraFin());
+            ps.setString(5, cita.getServicio());
+            ps.setInt(6, cita.getIdCita());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo actualizar la cita.", e);
         }
     }
 
