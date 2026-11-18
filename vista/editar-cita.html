@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar cita - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 05 · Edición de cita -->
+
+  <header>
+    <a href="citas.html" aria-label="Regresar a citas">&larr;</a>
+    <h1>Editar cita</h1>
+  </header>
+
+  <main>
+    <p>Actualiza los datos de la cita de <strong>Ana Martínez</strong>.</p>
+    <p><small>Duración: 1 hora · Lunes 2 de noviembre</small></p>
+
+    <form id="form-editar-cita" action="cita-guardada.html" method="get">
+      <input type="hidden" id="id-cita" name="id" value="1">
+
+      <div>
+        <label for="cliente">Cliente</label>
+        <select id="cliente" name="cliente" required>
+          <option value="">Selecciona un cliente</option>
+          <option value="1" selected>Ana Martínez</option>
+          <option value="2">Lucía Torres</option>
+          <option value="3">Marta López</option>
+          <option value="4">Mario Parker</option>
+        </select>
+        <p class="error" id="error-cliente" hidden></p>
+      </div>
+
+      <div>
+        <label for="fecha">Fecha</label>
+        <input type="date" id="fecha" name="fecha" value="2026-11-02" required>
+        <p class="error" id="error-fecha" hidden></p>
+      </div>
+
+      <div>
+        <label for="hora-inicio">Hora de inicio</label>
+        <input type="time" id="hora-inicio" name="hora_inicio" value="10:00" required>
+      </div>
+
+      <div>
+        <label for="hora-fin">Hora de fin</label>
+        <input type="time" id="hora-fin" name="hora_fin" value="11:00" required>
+      </div>
+
+      <div id="aviso-horario-ocupado" role="alert" hidden>
+        <strong>Horario ocupado</strong>
+        <p>Coincide con otra cita. Cambia la hora antes de guardar.</p>
+      </div>
+
+      <div>
+        <label for="servicio">Servicio</label>
+        <select id="servicio" name="servicio">
+          <option value="">Selecciona un servicio</option>
+          <option value="Limpieza facial" selected>Limpieza facial</option>
+          <option value="Manicure">Manicure</option>
+          <option value="Depilación">Depilación</option>
+          <option value="Masaje relajante">Masaje relajante</option>
+        </select>
+        <p class="error" id="error-servicio" hidden></p>
+      </div>
+
+      <div>
+        <label for="servicio-personalizado">Servicio personalizado</label>
+        <input type="text" id="servicio-personalizado" name="servicio_personalizado" placeholder="Escribe un servicio no listado" maxlength="60">
+        <small>Usa este campo si el servicio no aparece en las opciones preestablecidas.</small>
+      </div>
+
+      <button type="submit" id="btn-guardar">Guardar cambios</button>
+    </form>
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Editar producto - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 16 · Modificación de producto -->
+
+  <header>
+    <a href="inventario.html" aria-label="Regresar al inventario">&larr;</a>
+    <h1>Editar producto</h1>
+  </header>
+
+  <main>
+    <p>Modifica los datos o actualiza las existencias de este producto.</p>
+
+    <form id="form-editar-producto" action="inventario.html" method="get">
+      <input type="hidden" id="id-producto" name="id" value="1">
+
+      <div>
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" value="Gel limpiador de aloe" maxlength="60" required>
+        <p class="error" id="error-nombre" hidden></p>
+      </div>
+
+      <div>
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria" required>
+          <option value="">Selecciona una categoría</option>
+          <option value="Cuidado facial" selected>Cuidado facial</option>
+          <option value="Masaje">Masaje</option>
+          <option value="Uñas">Uñas</option>
+          <option value="Depilación">Depilación</option>
+        </select>
+        <p class="error" id="error-categoria" hidden></p>
+      </div>
+
+      <div>
+        <label for="cantidad">Cantidad disponible</label>
+        <input type="number" id="cantidad" name="cantidad" value="12" min="0" step="1" required>
+        <small>Cantidad en unidades. Usa un número entero.</small>
+        <p class="error" id="error-cantidad" hidden></p>
+      </div>
+
+      <button type="submit" id="btn-guardar">Guardar cambios</button>
+    </form>
+
+    <a href="confirmar-baja-producto.html?id=1" id="btn-dar-baja">Dar de baja</a>
+  </main>
+
+</body>
+</html>

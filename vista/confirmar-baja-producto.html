@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dar de baja producto - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 17 · Confirmación de baja de producto -->
+
+  <main>
+    <section id="confirmar-baja" role="alertdialog" aria-labelledby="titulo-baja" aria-describedby="texto-baja">
+      <h1 id="titulo-baja">¿Dar de baja este producto?</h1>
+      <p id="texto-baja"><strong>Gel limpiador de aloe</strong> dejará de aparecer en el inventario activo.</p>
+
+      <form id="form-baja-producto" action="inventario.html" method="get">
+        <input type="hidden" id="id-producto" name="id" value="1">
+        <button type="submit" id="btn-confirmar-baja">Dar de baja</button>
+      </form>
+
+      <a href="editar-producto.html?id=1" id="btn-cancelar">Cancelar</a>
+    </section>
+  </main>
+
+</body>
+</html>

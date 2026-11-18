@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clientes - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 10 · Listado de clientes -->
+
+  <header>
+    <h1>Clientes</h1>
+  </header>
+
+  <main>
+    <form id="form-buscar" role="search">
+      <label for="buscar">Buscar por nombre o teléfono</label>
+      <input type="search" id="buscar" name="buscar" placeholder="Buscar por nombre o teléfono">
+    </form>
+
+    <section id="clientes">
+      <h2>Todos los clientes</h2>
+      <p id="total-clientes">3 clientes</p>
+
+      <ul id="lista-clientes">
+        <li>
+          <a href="perfil-cliente.html?id=1">
+            <span aria-hidden="true">AM</span>
+            <strong>Ana Martínez</strong>
+            <span>55 1234 5678</span>
+          </a>
+        </li>
+        <li>
+          <a href="perfil-cliente.html?id=2">
+            <span aria-hidden="true">LT</span>
+            <strong>Lucía Torres</strong>
+            <span>55 5678 9012</span>
+          </a>
+        </li>
+        <li>
+          <a href="perfil-cliente.html?id=3">
+            <span aria-hidden="true">ML</span>
+            <strong>Marta López</strong>
+            <span>55 8765 4321</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+
+    <a href="registrar-cliente.html" id="btn-nuevo-cliente">Nuevo cliente</a>
+  </main>
+
+  <nav id="menu-inferior">
+    <ul>
+      <li><a href="inicio.html">Inicio</a></li>
+      <li><a href="citas.html">Citas</a></li>
+      <li><a href="clientes.html" aria-current="page">Clientes</a></li>
+      <li><a href="inventario.html">Inventario</a></li>
+      <li><a href="mas.html">Más</a></li>
+    </ul>
+  </nav>
+
+</body>
+</html>

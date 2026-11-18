@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inicio de sesión - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 00 · Inicio de sesión -->
+
+  <header>
+    <span aria-hidden="true">🌱</span>
+    <h1>Bambú y Brillo</h1>
+    <p>Gestión interna · Cosmetología y spa</p>
+  </header>
+
+  <main>
+    <h2>Inicio de sesión</h2>
+    <p>Ingresa con tus credenciales de administradora.</p>
+
+    <form id="form-inicio-sesion" action="inicio.html" method="post">
+      <div>
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" name="usuario" placeholder="sofia.admin" autocomplete="username" required>
+        <p class="error" id="error-usuario" hidden></p>
+      </div>
+
+      <div>
+        <label for="contrasena">Contraseña</label>
+        <input type="password" id="contrasena" name="contrasena" autocomplete="current-password" required>
+        <button type="button" id="btn-ver-contrasena" aria-label="Mostrar contraseña">👁</button>
+        <p class="error" id="error-contrasena" hidden></p>
+      </div>
+
+      <p id="mensaje-formulario" role="alert" hidden></p>
+
+      <button type="submit" id="btn-ingresar">Ingresar</button>
+    </form>
+  </main>
+
+</body>
+</html>

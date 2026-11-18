@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del cliente - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 11 · Perfil del cliente -->
+
+  <header>
+    <a href="clientes.html" aria-label="Regresar a clientes">&larr;</a>
+    <h1>Perfil del cliente</h1>
+  </header>
+
+  <main>
+    <section id="datos-cliente">
+      <span aria-hidden="true">AM</span>
+      <h2>Ana Martínez</h2>
+      <p>55 1234 5678</p>
+      <p>ana.martinez@example.com</p>
+      <a href="editar-cliente.html?id=1" id="btn-editar-perfil">✎ Editar perfil</a>
+    </section>
+
+    <a href="historia-clinica.html?id=1" id="btn-historia-clinica">
+      <strong>Historia clínica</strong>
+      <span>Tratamientos y observaciones</span>
+    </a>
+
+    <section id="citas-cliente">
+      <h2>Sus citas</h2>
+      <p>Próxima cita</p>
+
+      <ul id="lista-citas-cliente">
+        <li>
+          <a href="editar-cita.html?id=1">
+            <span>10:00 – 11:00</span>
+            <span>2 nov 2026</span>
+            <strong>Ana Martínez</strong>
+            <span>Limpieza facial</span>
+          </a>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+</body>
+</html>
