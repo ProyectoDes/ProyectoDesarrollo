@@ -18,6 +18,7 @@ import mx.bambuybrillo.negocio.ConsultarCitas;
 import mx.bambuybrillo.negocio.EliminarCita;
 import mx.bambuybrillo.negocio.ModificarCita;
 import mx.bambuybrillo.negocio.RegistrarCita;
+import mx.bambuybrillo.negocio.ValidacionException;
 
 public class CitasApi {
 
@@ -176,7 +177,11 @@ public class CitasApi {
     }
 
     private void manejarError(HttpExchange ex, RuntimeException e) throws IOException {
-        if (e instanceof IllegalArgumentException) {
+        if (e instanceof ValidacionException) {
+            ValidacionException v = (ValidacionException) e;
+            responder(ex, 400, "{\"error\":\"" + escapar(v.getMessage())
+                    + "\",\"campo\":\"" + escapar(v.getCampo()) + "\"}");
+        } else if (e instanceof IllegalArgumentException) {
             responder(ex, 400, "{\"error\":\"" + escapar(e.getMessage()) + "\"}");
         } else {
             e.printStackTrace();
