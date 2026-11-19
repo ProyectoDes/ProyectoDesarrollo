@@ -5,12 +5,14 @@ import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 
 import mx.bambuybrillo.entidad.Cliente;
+import mx.bambuybrillo.negocio.ConsultarClientes;
 import mx.bambuybrillo.negocio.RegistrarCliente;
 import mx.bambuybrillo.negocio.ValidacionException;
 
@@ -18,15 +20,45 @@ import mx.bambuybrillo.negocio.ValidacionException;
 public class ClientesApi {
 
     private static final String RUTA_REGISTRO = "/api/clientes/registro";
+    private static final String RUTA_LISTA = "/api/clientes/lista";
 
     private final RegistrarCliente registrarCliente;
+    private final ConsultarClientes consultarClientes;
 
-    public ClientesApi(RegistrarCliente registrarCliente) {
+    public ClientesApi(RegistrarCliente registrarCliente, ConsultarClientes consultarClientes) {
         this.registrarCliente = registrarCliente;
+        this.consultarClientes = consultarClientes;
     }
 
     public void registrarRutas(HttpServer servidor) {
         servidor.createContext(RUTA_REGISTRO, this::atenderRegistro);
+        servidor.createContext(RUTA_LISTA, this::atenderLista);
+    }
+
+    // Lista de clientes con nombre, edad y telefono para la pantalla de Clientes
+    private void atenderLista(HttpExchange ex) throws IOException {
+        try {
+            if (!"GET".equals(ex.getRequestMethod())) {
+                responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
+                return;
+            }
+            List<Cliente> clientes = consultarClientes.listar();
+            StringBuilder json = new StringBuilder("[");
+            for (int i = 0; i < clientes.size(); i++) {
+                Cliente c = clientes.get(i);
+                if (i > 0) {
+                    json.append(",");
+                }
+                json.append("{\"id\":").append(c.getIdCliente())
+                        .append(",\"nombre\":\"").append(escapar(c.getNombreCliente())).append("\"")
+                        .append(",\"edad\":").append(c.getEdadCliente())
+                        .append(",\"telefono\":\"").append(escapar(c.getTelefonoCliente())).append("\"}");
+            }
+            json.append("]");
+            responder(ex, 200, json.toString());
+        } catch (RuntimeException e) {
+            manejarError(ex, e);
+        }
     }
 
     private void atenderRegistro(HttpExchange ex) throws IOException {
