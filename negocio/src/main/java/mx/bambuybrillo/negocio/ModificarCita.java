@@ -6,9 +6,11 @@ import mx.bambuybrillo.persistencia.CitaRepositorio;
 public class ModificarCita {
 
     private final CitaRepositorio repositorio;
+    private final RegistrarCita reglas;
 
     public ModificarCita(CitaRepositorio repositorio) {
         this.repositorio = repositorio;
+        this.reglas = new RegistrarCita(repositorio);
     }
 
     public String modificar(Cita cita) {
@@ -20,12 +22,8 @@ public class ModificarCita {
         return "Cita actualizada correctamente.";
     }
 
+    // Una cita editada debe cumplir las mismas reglas que una cita nueva
     public void validar(Cita cita) {
-        if (cita == null) {
-            throw new IllegalArgumentException("Los datos de la cita son obligatorios.");
-        }
-        if (cita.getIdCliente() <= 0) {
-            throw new IllegalArgumentException("Selecciona un cliente.");
-        }
+        reglas.validar(cita);
     }
 }
