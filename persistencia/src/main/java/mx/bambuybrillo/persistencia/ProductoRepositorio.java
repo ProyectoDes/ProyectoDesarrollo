@@ -18,4 +18,6 @@ public interface ProductoRepositorio {
     boolean eliminar(int idProducto);
 
     boolean estaLigadoACita(int idProducto);
+
+    boolean existeNombre(String nombre);
 }

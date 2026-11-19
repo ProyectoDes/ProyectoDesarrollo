@@ -20,6 +20,9 @@ public class RegistrarProducto {
             String descripcion = producto.getDescripcion().trim();
             producto.setDescripcion(descripcion.isEmpty() ? null : descripcion);
         }
+        if (repositorio.existeNombre(producto.getNombre())) {
+            throw new IllegalArgumentException("Ya existe un producto con ese nombre.");
+        }
         repositorio.guardar(producto);
         return "Producto registrado correctamente.";
     }

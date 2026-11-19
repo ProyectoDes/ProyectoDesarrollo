@@ -33,6 +33,9 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
     public static final String SQL_LIGADO_A_CITA =
             "SELECT COUNT(*) FROM cita_producto WHERE id_producto = ?";
 
+    public static final String SQL_EXISTE_NOMBRE =
+            "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(?)";
+
     private final String url;
     private final String usuario;
     private final String clave;
@@ -138,6 +141,20 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
         } catch (SQLException e) {
             throw new IllegalStateException(
                     "No se pudo consultar si el producto está ligado a una cita.", e);
+        }
+    }
+
+    @Override
+    public boolean existeNombre(String nombre) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_EXISTE_NOMBRE)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next() && rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "No se pudo consultar si el nombre del producto ya existe.", e);
         }
     }
 }
