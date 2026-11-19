@@ -14,6 +14,7 @@
   var botonGuardar = document.getElementById('btn-guardar');
   var textoCliente = document.querySelector('main > p strong');
   var textoDetalle = document.querySelector('main > p small');
+  var avisoHorario = document.getElementById('aviso-horario-ocupado');
 
   // Espacio para mostrar errores encima del boton Guardar
   var aviso = document.createElement('p');
@@ -121,6 +122,7 @@
   formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
     aviso.hidden = true;
+    avisoHorario.hidden = true;
     botonGuardar.disabled = true;
 
     var datos = new URLSearchParams();
@@ -145,7 +147,11 @@
         if (resultado.ok) {
           window.location.href = 'citas.html?fecha=' + encodeURIComponent(campoFecha.value);
         } else {
-          mostrarError(resultado.cuerpo.error || 'No se pudo guardar la cita.');
+          if (resultado.cuerpo.campo === 'horario') {
+            avisoHorario.hidden = false;
+          } else {
+            mostrarError(resultado.cuerpo.error || 'No se pudo guardar la cita.');
+          }
           botonGuardar.disabled = false;
         }
       })
