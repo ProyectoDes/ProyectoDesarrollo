@@ -1,5 +1,8 @@
 package mx.bambuybrillo.negocio;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import mx.bambuybrillo.entidad.Cliente;
 import mx.bambuybrillo.persistencia.ClienteRepositorio;
 import org.junit.jupiter.api.Test;
@@ -19,6 +22,11 @@ class RegistrarClienteTest {
 
         @Override
         public void actualizar(Cliente cliente) {
+        }
+
+        @Override
+        public List<Cliente> listar() {
+            return new ArrayList<>();
         }
     }
 
