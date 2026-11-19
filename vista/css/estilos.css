@@ -160,6 +160,14 @@ textarea:focus-visible {
   font-size: 0.875rem;
 }
 
+#lista-citas-hoy .vacio {
+  padding: 14px var(--espacio);
+  border: 1px dashed var(--color-borde);
+  border-radius: var(--radio);
+  color: var(--color-texto-suave);
+  text-align: center;
+}
+
 /* Lista de clientes */
 
 #lista-clientes {
