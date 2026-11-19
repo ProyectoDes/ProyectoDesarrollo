@@ -87,11 +87,15 @@
       });
   }
 
-  // Al abrir la pantalla se muestra la agenda del dia de hoy
+  // Al abrir la pantalla se muestra la fecha indicada (citas.html?fecha=2026-11-20)
+  // o, si no viene ninguna, la agenda del dia de hoy
+  var fechaPedida = new URLSearchParams(window.location.search).get('fecha');
   var hoy = new Date();
-  inputFecha.value = hoy.getFullYear() + '-'
-    + String(hoy.getMonth() + 1).padStart(2, '0') + '-'
-    + String(hoy.getDate()).padStart(2, '0');
+  inputFecha.value = /^\d{4}-\d{2}-\d{2}$/.test(fechaPedida || '')
+    ? fechaPedida
+    : hoy.getFullYear() + '-'
+      + String(hoy.getMonth() + 1).padStart(2, '0') + '-'
+      + String(hoy.getDate()).padStart(2, '0');
 
   inputFecha.addEventListener('change', mostrarCitas);
   cargarCitas();
