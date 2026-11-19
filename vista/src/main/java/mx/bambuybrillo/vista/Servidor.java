@@ -16,6 +16,7 @@ import mx.bambuybrillo.negocio.EliminarCita;
 import mx.bambuybrillo.negocio.RegistrarCita;
 import mx.bambuybrillo.negocio.ModificarCita;
 import mx.bambuybrillo.persistencia.CitaRepositorioPostgres;
+import mx.bambuybrillo.negocio.ConsultarClientes;
 import mx.bambuybrillo.negocio.RegistrarCliente;
 import mx.bambuybrillo.persistencia.ClienteRepositorioPostgres;
 
@@ -41,7 +42,9 @@ public class Servidor {
 
         ClienteRepositorioPostgres repositorioClientes =
                 new ClienteRepositorioPostgres(url, usuario, clave);
-        ClientesApi apiClientes = new ClientesApi(new RegistrarCliente(repositorioClientes));
+        ClientesApi apiClientes = new ClientesApi(
+                new RegistrarCliente(repositorioClientes),
+                new ConsultarClientes(repositorioClientes));
         apiClientes.registrarRutas(servidor);
 
         Path carpetaVista = localizarCarpetaVista();
