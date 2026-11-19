@@ -44,6 +44,10 @@ public class RegistrarCita {
         if (!fin.isAfter(inicio)) {
             throw new ValidacionException("horaFin", "La hora de fin debe ser posterior a la hora de inicio.");
         }
+        if (repositorio.hayTraslape(fecha.toString(), inicio.toString(), fin.toString(), cita.getIdCita())) {
+            throw new ValidacionException("horario",
+                    "Ese horario se encima con otra cita. Elige otra hora.");
+        }
         String servicio = cita.getServicio() == null ? "" : cita.getServicio().trim();
         if (servicio.isEmpty()) {
             throw new ValidacionException("servicio", "Selecciona o escribe un servicio.");
