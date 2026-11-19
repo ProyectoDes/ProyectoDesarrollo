@@ -19,6 +19,7 @@ class RegistrarCitaTest {
     static class RepositorioFalso implements CitaRepositorio {
         int guardadas = 0;
         boolean clienteExiste = true;
+        boolean traslape = false;
 
         @Override
         public void guardar(Cita cita) {
@@ -46,6 +47,11 @@ class RegistrarCitaTest {
         @Override
         public boolean existeCliente(int idCliente) {
             return clienteExiste;
+        }
+
+        @Override
+        public boolean hayTraslape(String fecha, String horaInicio, String horaFin, int idCitaExcluir) {
+            return traslape;
         }
     }
 
@@ -128,6 +134,12 @@ class RegistrarCitaTest {
         Cita cita = citaValida();
         cita.setHoraFin("abc");
         verificarFalla(cita, "horaFin", "La hora de fin no es válida.");
+    }
+
+    @Test
+    void horarioEncimadoConOtraCitaFalla() {
+        repositorio.traslape = true;
+        verificarFalla(citaValida(), "horario", "Ese horario se encima con otra cita. Elige otra hora.");
     }
 
     @Test
