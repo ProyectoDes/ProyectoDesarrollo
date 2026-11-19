@@ -18,4 +18,8 @@ public interface CitaRepositorio {
     List<ClienteOpcion> listarClientes();
 
     boolean existeCliente(int idCliente);
+
+    // true si otra cita del mismo dia se encima con el horario indicado.
+    // idCitaExcluir sirve al editar, para no compararse con la misma cita.
+    boolean hayTraslape(String fecha, String horaInicio, String horaFin, int idCitaExcluir);
 }
