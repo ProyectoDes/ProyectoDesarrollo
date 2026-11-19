@@ -14,6 +14,7 @@ import com.sun.net.httpserver.HttpServer;
 import mx.bambuybrillo.negocio.ConsultarCitas;
 import mx.bambuybrillo.negocio.EliminarCita;
 import mx.bambuybrillo.negocio.RegistrarCita;
+import mx.bambuybrillo.negocio.ModificarCita;
 import mx.bambuybrillo.persistencia.CitaRepositorioPostgres;
 
 public class Servidor {
@@ -30,7 +31,8 @@ public class Servidor {
         CitasApi api = new CitasApi(
                 new RegistrarCita(repositorio),
                 new ConsultarCitas(repositorio),
-                new EliminarCita(repositorio));
+                new EliminarCita(repositorio),
+                new ModificarCita(repositorio));
 
         HttpServer servidor = HttpServer.create(new InetSocketAddress(PUERTO), 0);
         api.registrarRutas(servidor);

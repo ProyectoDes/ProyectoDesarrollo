@@ -26,6 +26,10 @@ class RegistrarCitaTest {
         }
 
         @Override
+        public void actualizar(Cita cita) {
+        }
+
+        @Override
         public List<CitaConCliente> listarConCliente() {
             return new ArrayList<>();
         }
