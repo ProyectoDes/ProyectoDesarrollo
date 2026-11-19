@@ -9,6 +9,8 @@
   aviso.hidden = true;
   formulario.insertBefore(aviso, botonGuardar);
 
+  var avisoHorario = document.getElementById('aviso-horario-ocupado');
+
   function mostrarError(texto) {
     aviso.textContent = texto;
     aviso.hidden = false;
@@ -34,6 +36,7 @@
   formulario.addEventListener('submit', function (evento) {
     evento.preventDefault();
     aviso.hidden = true;
+    avisoHorario.hidden = true;
 
     var datos = new URLSearchParams();
     datos.set('id_cliente', selectCliente.value);
@@ -58,7 +61,11 @@
         if (resultado.ok) {
           window.location.href = 'cita-guardada.html';
         } else {
-          mostrarError(resultado.cuerpo.error || 'No se pudo guardar la cita.');
+          if (resultado.cuerpo.campo === 'horario') {
+            avisoHorario.hidden = false;
+          } else {
+            mostrarError(resultado.cuerpo.error || 'No se pudo guardar la cita.');
+          }
         }
       })
       .catch(function () {
