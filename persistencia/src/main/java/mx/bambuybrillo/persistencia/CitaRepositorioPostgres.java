@@ -37,6 +37,11 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
     public static final String SQL_EXISTE_CLIENTE =
             "SELECT 1 FROM clientes WHERE id_cliente = ?";
 
+    // Dos citas se enciman si una empieza antes de que termine la otra
+    public static final String SQL_HAY_TRASLAPE =
+            "SELECT 1 FROM citas WHERE fecha = ?::date AND id_cita <> ? "
+                    + "AND hora_inicio < ?::time AND hora_fin > ?::time LIMIT 1";
+
     private final String url;
     private final String usuario;
     private final String clave;
@@ -147,6 +152,22 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
             }
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo verificar el cliente.", e);
+        }
+    }
+
+    @Override
+    public boolean hayTraslape(String fecha, String horaInicio, String horaFin, int idCitaExcluir) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_HAY_TRASLAPE)) {
+            ps.setString(1, fecha);
+            ps.setInt(2, idCitaExcluir);
+            ps.setString(3, horaFin);
+            ps.setString(4, horaInicio);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo verificar la disponibilidad del horario.", e);
         }
     }
 }
