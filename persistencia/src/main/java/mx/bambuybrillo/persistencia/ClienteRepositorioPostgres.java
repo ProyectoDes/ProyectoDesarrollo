@@ -3,7 +3,10 @@ package mx.bambuybrillo.persistencia;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import mx.bambuybrillo.entidad.Cliente;
 
@@ -14,6 +17,9 @@ public class ClienteRepositorioPostgres implements ClienteRepositorio {
 
     public static final String SQL_ACTUALIZAR =
             "UPDATE clientes SET nombre = ?, edad = ?, telefono = ? WHERE id_cliente = ?";
+
+    public static final String SQL_LISTAR =
+            "SELECT id_cliente, nombre, edad, telefono FROM clientes ORDER BY nombre";
 
     private final String url;
     private final String usuario;
@@ -56,5 +62,24 @@ public class ClienteRepositorioPostgres implements ClienteRepositorio {
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo actualizar el cliente.", e);
         }
+    }
+
+    @Override
+    public List<Cliente> listar() {
+        List<Cliente> clientes = new ArrayList<>();
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_LISTAR);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                clientes.add(new Cliente(
+                        rs.getInt("id_cliente"),
+                        rs.getString("nombre"),
+                        rs.getInt("edad"),
+                        rs.getString("telefono")));
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo consultar los clientes.", e);
+        }
+        return clientes;
     }
 }
