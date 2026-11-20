@@ -16,6 +16,13 @@
   var textoDetalle = document.querySelector('main > p small');
   var avisoHorario = document.getElementById('aviso-horario-ocupado');
 
+  // Si se llegó desde el perfil de un cliente, al guardar se regresa ahí
+  var volver = new URLSearchParams(window.location.search).get('volver');
+  var destino = volver && /^[a-z-]+\.html(\?[a-z]+=\d+)?$/.test(volver) ? volver : null;
+  if (destino) {
+    document.querySelector('header > a').href = destino;
+  }
+
   // Espacio para mostrar errores encima del boton Guardar
   var aviso = document.createElement('p');
   aviso.className = 'error';
@@ -145,7 +152,7 @@
       })
       .then(function (resultado) {
         if (resultado.ok) {
-          window.location.href = 'citas.html?fecha=' + encodeURIComponent(campoFecha.value);
+          window.location.href = destino || 'citas.html?fecha=' + encodeURIComponent(campoFecha.value);
         } else {
           if (resultado.cuerpo.campo === 'horario') {
             avisoHorario.hidden = false;
