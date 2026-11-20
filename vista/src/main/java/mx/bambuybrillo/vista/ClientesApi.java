@@ -13,6 +13,7 @@ import com.sun.net.httpserver.HttpServer;
 
 import mx.bambuybrillo.entidad.Cliente;
 import mx.bambuybrillo.negocio.ConsultarClientes;
+import mx.bambuybrillo.negocio.EliminarCliente;
 import mx.bambuybrillo.negocio.RegistrarCliente;
 import mx.bambuybrillo.negocio.ValidacionException;
 
@@ -21,18 +22,38 @@ public class ClientesApi {
 
     private static final String RUTA_REGISTRO = "/api/clientes/registro";
     private static final String RUTA_LISTA = "/api/clientes/lista";
+    private static final String RUTA_BAJA = "/api/clientes/baja/";
 
     private final RegistrarCliente registrarCliente;
     private final ConsultarClientes consultarClientes;
+    private final EliminarCliente eliminarCliente;
 
-    public ClientesApi(RegistrarCliente registrarCliente, ConsultarClientes consultarClientes) {
+    public ClientesApi(RegistrarCliente registrarCliente, ConsultarClientes consultarClientes,
+                       EliminarCliente eliminarCliente) {
         this.registrarCliente = registrarCliente;
         this.consultarClientes = consultarClientes;
+        this.eliminarCliente = eliminarCliente;
     }
 
     public void registrarRutas(HttpServer servidor) {
         servidor.createContext(RUTA_REGISTRO, this::atenderRegistro);
         servidor.createContext(RUTA_LISTA, this::atenderLista);
+        servidor.createContext(RUTA_BAJA, this::atenderBaja);
+    }
+
+    // DELETE /api/clientes/baja/5 -> borra al cliente con sus citas e historia clínica
+    private void atenderBaja(HttpExchange ex) throws IOException {
+        try {
+            if (!"DELETE".equals(ex.getRequestMethod())) {
+                responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
+                return;
+            }
+            int id = aEntero(ex.getRequestURI().getPath().substring(RUTA_BAJA.length()));
+            String mensaje = eliminarCliente.eliminar(id);
+            responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+        } catch (RuntimeException e) {
+            manejarError(ex, e);
+        }
     }
 
     // Lista de clientes con nombre, edad y telefono para la pantalla de Clientes
