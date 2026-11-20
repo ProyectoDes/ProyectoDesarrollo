@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dar de baja cliente - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Confirmación para dar de baja a un cliente (mismo estilo que la baja de producto) -->
+
+  <main>
+    <section id="confirmar-baja-cliente" role="alertdialog" aria-labelledby="titulo-baja" aria-describedby="texto-baja">
+      <h1 id="titulo-baja">¿Dar de baja a este cliente?</h1>
+      <p id="texto-baja">Cargando datos del cliente...</p>
+
+      <form id="form-baja-cliente">
+        <button type="submit" id="btn-confirmar-baja-cliente">Dar de baja</button>
+      </form>
+
+      <a href="clientes.html" id="btn-cancelar">Cancelar</a>
+    </section>
+  </main>
+
+  <script src="js/baja-cliente.js"></script>
+</body>
+</html>
