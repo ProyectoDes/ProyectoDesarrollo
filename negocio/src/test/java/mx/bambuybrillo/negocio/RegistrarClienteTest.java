@@ -14,6 +14,7 @@ class RegistrarClienteTest {
     // Repositorio falso: cuenta los guardados en vez de usar la base de datos
     static class RepositorioFalso implements ClienteRepositorio {
         int guardados = 0;
+        int eliminado = 0;
 
         @Override
         public void guardar(Cliente cliente) {
@@ -27,6 +28,11 @@ class RegistrarClienteTest {
         @Override
         public List<Cliente> listar() {
             return new ArrayList<>();
+        }
+
+        @Override
+        public void eliminar(int idCliente) {
+            eliminado = idCliente;
         }
     }
 
