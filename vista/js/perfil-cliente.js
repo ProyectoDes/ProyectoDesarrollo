@@ -13,6 +13,7 @@
   var botonHistoria = document.getElementById('btn-historia-clinica');
   var notaCitas = document.getElementById('nota-citas');
   var lista = document.getElementById('lista-citas-cliente');
+  var botonBaja = document.getElementById('btn-baja-cliente');
 
   function sacarIniciales(texto) {
     var partes = String(texto || '').trim().split(/\s+/).filter(Boolean);
@@ -86,6 +87,8 @@
     edad.textContent = cliente.edad ? cliente.edad + ' años' : '';
     botonEditar.href = 'editar-cliente.html?id=' + cliente.id;
     botonHistoria.href = 'historia-clinica.html?id=' + cliente.id;
+    botonBaja.href = 'confirmar-baja-cliente.html?id=' + cliente.id;
+    botonBaja.hidden = false;
     document.title = cliente.nombre + ' - Bambú y Brillo';
   }
 
