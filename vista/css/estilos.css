@@ -54,6 +54,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -904,6 +908,88 @@ main > p.intro,
   font-size: 0.875rem;
 }
 
+/* Lista de productos con casillas (se pueden marcar varios) */
+
+#campo-productos {
+  margin: 0 0 var(--espacio);
+  padding: 0;
+  border: 0;
+}
+
+#campo-productos legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+#lista-productos-check {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  overflow: hidden;
+}
+
+#lista-productos-check li + li {
+  border-top: 1px solid var(--color-linea);
+}
+
+#lista-productos-check label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  margin: 0;
+  padding: 10px 14px;
+  font-size: 1rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+#lista-productos-check input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: var(--color-primario);
+}
+
+#lista-productos-check span {
+  flex: 1;
+}
+
+#lista-productos-check small {
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+}
+
+#lista-productos-check label:has(input:checked:not(:disabled)) {
+  background: var(--color-suave-fondo);
+}
+
+#lista-productos-check label:has(input:disabled) {
+  color: var(--color-texto-suave);
+  cursor: default;
+}
+
+#lista-productos-check .sin-datos {
+  padding: 14px;
+  text-align: center;
+}
+
+.sin-datos {
+  color: var(--color-texto-suave);
+}
+
+.observaciones {
+  white-space: pre-line;
+}
+
 /* Más */
 
 #usuario-actual {
@@ -1062,7 +1148,8 @@ form > p:not(.error):not([role="status"]) {
 
 /* Enlace de dar de baja (editar producto) */
 
-#btn-dar-baja {
+#btn-dar-baja,
+#btn-baja-cliente {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1073,7 +1160,8 @@ form > p:not(.error):not([role="status"]) {
   text-decoration: none;
 }
 
-#btn-dar-baja::before {
+#btn-dar-baja::before,
+#btn-baja-cliente::before {
   content: "";
   width: 18px;
   height: 18px;
@@ -1082,21 +1170,21 @@ form > p:not(.error):not([role="status"]) {
   mask: var(--i-trash) center / contain no-repeat;
 }
 
-/* Confirmación de baja de producto (ventana sobre fondo oscurecido) */
+/* Ventanas de confirmación (baja de producto, de cliente y eliminar cita) */
 
-body:has(#confirmar-baja) {
+body:has([role="alertdialog"]) {
   display: grid;
   align-content: center;
   background: #9aab93;
 }
 
-#confirmar-baja {
+[role="alertdialog"] {
   padding: 20px;
   border-radius: var(--radio-tarjeta);
   background: var(--color-superficie);
 }
 
-#confirmar-baja::before {
+[role="alertdialog"]::before {
   content: "";
   display: block;
   width: 40px;
@@ -1106,28 +1194,45 @@ body:has(#confirmar-baja) {
   background: var(--color-peligro-fondo) var(--i-trash-rojo) center / 22px no-repeat;
 }
 
-#confirmar-baja h1 {
+[role="alertdialog"] h1 {
   margin-bottom: 12px;
   font-size: 1.375rem;
 }
 
-#confirmar-baja p {
+[role="alertdialog"] > p {
   margin: 0 0 var(--espacio);
   color: var(--color-texto-suave);
   font-size: 0.9375rem;
 }
 
-#confirmar-baja strong {
+[role="alertdialog"] > p strong {
   font-weight: 400;
 }
 
-#btn-confirmar-baja {
+#btn-confirmar-baja,
+#btn-confirmar-baja-cliente,
+#btn-confirmar-eliminar {
   background: var(--color-peligro);
   border-color: var(--color-peligro);
 }
 
-#btn-confirmar-baja:hover {
+#btn-confirmar-baja:hover,
+#btn-confirmar-baja-cliente:hover,
+#btn-confirmar-eliminar:hover {
   background: #b93a3a;
+}
+
+#resumen-cita {
+  margin-bottom: var(--espacio);
+  padding: 12px;
+  border-radius: var(--radio);
+  background: var(--color-fondo);
+}
+
+#resumen-cita p {
+  margin: 4px 0 0;
+  color: var(--color-texto-suave);
+  font-size: 0.875rem;
 }
 
 #btn-cancelar {
