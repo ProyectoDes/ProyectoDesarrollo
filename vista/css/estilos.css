@@ -733,7 +733,24 @@ textarea:focus-visible {
 
 .tarjeta-cita {
   display: grid;
-  gap: 2px;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 2px 12px;
+}
+
+.tarjeta-cita .horario,
+.tarjeta-cita strong {
+  grid-column: 1 / -1;
+}
+
+.tarjeta-cita a {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.tarjeta-cita .accion-eliminar {
+  color: var(--color-peligro);
 }
 
 .tarjeta-cita .horario {
@@ -1063,6 +1080,60 @@ main > footer p {
   color: var(--color-texto-suave);
   font-size: 0.75rem;
   text-align: center;
+}
+
+/* Preferencia de formato de hora (Más) */
+
+#preferencias {
+  margin-bottom: var(--espacio);
+}
+
+#preferencias h2 {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+
+.selector-formato {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.selector-formato label {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.selector-formato input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.selector-formato small {
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.selector-formato label:has(input:checked) {
+  border: 2px solid var(--color-primario);
+  padding: 11px 13px;
+  background: var(--color-suave-fondo);
+  color: var(--color-primario);
+}
+
+.selector-formato label:has(input:focus-visible) {
+  outline: 3px solid var(--color-acento);
+  outline-offset: 2px;
 }
 
 /* Formularios */
