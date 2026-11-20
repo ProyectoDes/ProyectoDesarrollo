@@ -18,7 +18,13 @@ import mx.bambuybrillo.negocio.ModificarCita;
 import mx.bambuybrillo.persistencia.CitaRepositorioPostgres;
 import mx.bambuybrillo.negocio.ConsultarClientes;
 import mx.bambuybrillo.negocio.RegistrarCliente;
+import mx.bambuybrillo.negocio.EliminarCliente;
 import mx.bambuybrillo.persistencia.ClienteRepositorioPostgres;
+import mx.bambuybrillo.negocio.AgregarObservaciones;
+import mx.bambuybrillo.negocio.ConsultarHistoria;
+import mx.bambuybrillo.negocio.ConsultarProductos;
+import mx.bambuybrillo.persistencia.HistoriaRepositorioPostgres;
+import mx.bambuybrillo.persistencia.ProductoRepositorioPostgres;
 
 public class Servidor {
 
@@ -44,8 +50,17 @@ public class Servidor {
                 new ClienteRepositorioPostgres(url, usuario, clave);
         ClientesApi apiClientes = new ClientesApi(
                 new RegistrarCliente(repositorioClientes),
-                new ConsultarClientes(repositorioClientes));
+                new ConsultarClientes(repositorioClientes),
+                new EliminarCliente(repositorioClientes));
         apiClientes.registrarRutas(servidor);
+
+        HistoriaRepositorioPostgres repositorioHistoria =
+                new HistoriaRepositorioPostgres(url, usuario, clave);
+        HistoriaApi apiHistoria = new HistoriaApi(
+                new ConsultarHistoria(repositorioHistoria),
+                new AgregarObservaciones(repositorioHistoria),
+                new ConsultarProductos(new ProductoRepositorioPostgres(url, usuario, clave)));
+        apiHistoria.registrarRutas(servidor);
 
         Path carpetaVista = localizarCarpetaVista();
         servidor.createContext("/", exchange -> servirArchivo(exchange, carpetaVista));
