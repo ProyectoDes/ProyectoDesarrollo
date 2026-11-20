@@ -44,7 +44,6 @@ id_producto SERIAL PRIMARY KEY,
 nombre TEXT NOT NULL,
 descripcion TEXT,
 cantidad INTEGER NOT NULL DEFAULT 0 CHECK (cantidad >= 0),
-precio NUMERIC(10,2) NOT NULL CHECK (precio >= 0),
 fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
