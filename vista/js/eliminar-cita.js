@@ -32,8 +32,14 @@
   }
 
   // El id de la cita llega en la direccion: confirmar-eliminar-cita.html?id=5
-  var idCita = new URLSearchParams(window.location.search).get('id');
+  var parametros = new URLSearchParams(window.location.search);
+  var idCita = parametros.get('id');
   campoId.value = idCita || '';
+
+  // Si se llegó desde el perfil de un cliente, al terminar se regresa ahí
+  var volver = parametros.get('volver');
+  var destino = volver && /^[a-z-]+\.html(\?[a-z]+=\d+)?$/.test(volver) ? volver : 'citas.html';
+  document.getElementById('btn-cancelar').href = destino;
 
   function pintarCita(cita) {
     texto.textContent = '';
@@ -48,7 +54,7 @@
     tiempo.setAttribute('datetime', cita.fecha);
     linea.appendChild(tiempo);
     linea.appendChild(document.createTextNode(
-      ' · ' + cita.horaInicio + ' – ' + cita.horaFin));
+      ' · ' + (window.FormatoHora ? window.FormatoHora.rango(cita.horaInicio, cita.horaFin) : cita.horaInicio + ' – ' + cita.horaFin)));
     resumen.appendChild(linea);
   }
 
@@ -87,7 +93,7 @@
       })
       .then(function (resultado) {
         if (resultado.ok) {
-          window.location.href = 'citas.html';
+          window.location.href = destino;
         } else {
           mostrarError(resultado.cuerpo.error || 'No se pudo eliminar la cita.');
           botonEliminar.disabled = false;
