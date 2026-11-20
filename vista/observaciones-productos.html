@@ -11,51 +11,48 @@
   <!-- Pantalla 13 · Añadir observaciones y productos -->
 
   <header>
-    <a href="historia-clinica.html?id=1" aria-label="Regresar a historia clínica">&larr;</a>
+    <a href="clientes.html" id="btn-regresar" aria-label="Regresar a historia clínica">&larr;</a>
     <h1>Observaciones y productos</h1>
-    <p>Historia clínica · Ana Martínez</p>
+    <p id="subtitulo">Historia clínica</p>
   </header>
 
   <main>
     <section id="cita-origen" class="tarjeta-dato">
       <h2>Cita de origen</h2>
-      <p>Ana Martínez</p>
-      <p>26 oct 2026 · Limpieza facial</p>
+      <p id="origen-cliente">Cargando...</p>
+      <p id="origen-detalle"></p>
     </section>
 
     <section id="datos-registrados" class="tarjeta-dato">
       <h2>Productos registrados</h2>
-      <p>Gel limpiador de aloe · Sérum hialurónico</p>
+      <p id="productos-registrados"></p>
       <h2>Observaciones registradas</h2>
-      <p>Se realizó limpieza e hidratación. La clienta indicó sentirse cómoda.</p>
+      <p id="observaciones-registradas" class="observaciones"></p>
     </section>
 
-    <form id="form-observaciones" action="historia-clinica.html" method="get">
-      <input type="hidden" id="id-registro" name="id" value="1">
+    <form id="form-observaciones">
       <h2>Añadir nuevos datos</h2>
 
-      <div>
-        <label for="productos">Productos usados</label>
-        <select id="productos" name="productos" multiple>
-          <option value="1">Gel limpiador de aloe</option>
-          <option value="2">Sérum hialurónico</option>
-          <option value="3">Aceite de almendras</option>
-          <option value="4">Esmalte rosa</option>
-        </select>
-      </div>
+      <fieldset id="campo-productos">
+        <legend>Productos usados</legend>
+        <ul id="lista-productos-check">
+          <li class="sin-datos">Cargando productos...</li>
+        </ul>
+      </fieldset>
 
       <div>
         <label for="observaciones">Nuevas observaciones</label>
-        <textarea id="observaciones" name="observaciones" rows="4" placeholder="Añade observaciones adicionales..."></textarea>
+        <textarea id="observaciones" name="observaciones" rows="4" maxlength="1000" placeholder="Añade observaciones adicionales..."></textarea>
       </div>
 
       <p>Aquí solo puedes añadir productos y observaciones.</p>
 
-      <p id="mensaje-formulario" role="status" hidden></p>
+      <p class="error" id="mensaje-formulario" role="alert" hidden></p>
 
       <button type="submit" id="btn-guardar">Guardar cambios</button>
     </form>
   </main>
 
+  <script src="js/observaciones.js"></script>
 </body>
 </html>
