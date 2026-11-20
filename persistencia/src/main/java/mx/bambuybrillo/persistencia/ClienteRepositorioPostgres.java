@@ -21,6 +21,12 @@ public class ClienteRepositorioPostgres implements ClienteRepositorio {
     public static final String SQL_LISTAR =
             "SELECT id_cliente, nombre, edad, telefono FROM clientes ORDER BY nombre";
 
+    // Primero se borra lo que depende del cliente: su historia y sus citas
+    // (al borrar una cita se borran solos sus productos usados)
+    public static final String SQL_ELIMINAR_HISTORIA = "DELETE FROM historia_clinica WHERE id_cliente = ?";
+    public static final String SQL_ELIMINAR_CITAS = "DELETE FROM citas WHERE id_cliente = ?";
+    public static final String SQL_ELIMINAR = "DELETE FROM clientes WHERE id_cliente = ?";
+
     private final String url;
     private final String usuario;
     private final String clave;
@@ -81,5 +87,32 @@ public class ClienteRepositorioPostgres implements ClienteRepositorio {
             throw new IllegalStateException("No se pudo consultar los clientes.", e);
         }
         return clientes;
+    }
+
+    @Override
+    public void eliminar(int idCliente) {
+        try (Connection conexion = conectar()) {
+            conexion.setAutoCommit(false);
+            try {
+                for (String sql : new String[]{SQL_ELIMINAR_HISTORIA, SQL_ELIMINAR_CITAS}) {
+                    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+                        ps.setInt(1, idCliente);
+                        ps.executeUpdate();
+                    }
+                }
+                try (PreparedStatement ps = conexion.prepareStatement(SQL_ELIMINAR)) {
+                    ps.setInt(1, idCliente);
+                    if (ps.executeUpdate() == 0) {
+                        throw new IllegalArgumentException("El cliente ya no existe.");
+                    }
+                }
+                conexion.commit();
+            } catch (SQLException | RuntimeException e) {
+                conexion.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo dar de baja al cliente.", e);
+        }
     }
 }
