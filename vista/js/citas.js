@@ -30,7 +30,7 @@
     var item = document.createElement('li');
 
     var linea = document.createElement('p');
-    linea.appendChild(crearElemento('time', cita.horaInicio + ' – ' + cita.horaFin));
+    linea.appendChild(crearElemento('time', window.FormatoHora ? window.FormatoHora.rango(cita.horaInicio, cita.horaFin) : cita.horaInicio + ' – ' + cita.horaFin));
     linea.appendChild(document.createTextNode(' '));
     var tiempoFecha = crearElemento('time', fecha.texto);
     tiempoFecha.setAttribute('datetime', cita.fecha);
