@@ -53,24 +53,33 @@
     return elemento;
   }
 
+  // Tarjeta igual a la de Citas: con Editar y Eliminar, que regresan a este perfil
   function crearTarjetaCita(cita) {
     var item = document.createElement('li');
-    var enlace = document.createElement('a');
-    enlace.href = 'editar-cita.html?id=' + cita.id;
-    enlace.className = 'tarjeta tarjeta-cita';
+    item.className = 'tarjeta tarjeta-cita';
+    var volver = encodeURIComponent('perfil-cliente.html?id=' + idCliente);
 
     var horario = document.createElement('span');
     horario.className = 'horario';
-    horario.appendChild(crearElemento('time', cita.horaInicio + ' – ' + cita.horaFin));
+    horario.appendChild(crearElemento('time', window.FormatoHora
+      ? window.FormatoHora.rango(cita.horaInicio, cita.horaFin)
+      : cita.horaInicio + ' – ' + cita.horaFin));
     var fecha = crearElemento('time', formatearFecha(cita.fecha));
     fecha.setAttribute('datetime', cita.fecha);
     horario.appendChild(fecha);
-    enlace.appendChild(horario);
+    item.appendChild(horario);
 
-    enlace.appendChild(crearElemento('strong', cita.cliente));
-    enlace.appendChild(crearElemento('span', cita.servicio, 'servicio'));
+    item.appendChild(crearElemento('strong', cita.cliente));
+    item.appendChild(crearElemento('span', cita.servicio, 'servicio'));
 
-    item.appendChild(enlace);
+    var editar = crearElemento('a', 'Editar', 'accion-editar');
+    editar.href = 'editar-cita.html?id=' + cita.id + '&volver=' + volver;
+    item.appendChild(editar);
+
+    var eliminar = crearElemento('a', 'Eliminar', 'accion-eliminar');
+    eliminar.href = 'confirmar-eliminar-cita.html?id=' + cita.id + '&volver=' + volver;
+    item.appendChild(eliminar);
+
     return item;
   }
 
