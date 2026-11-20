@@ -11,13 +11,13 @@
   <!-- Pantalla 12 · Historia clínica -->
 
   <header>
-    <a href="perfil-cliente.html?id=1" aria-label="Regresar al perfil">&larr;</a>
+    <a href="perfil-cliente.html?id=1" id="btn-regresar" aria-label="Regresar al perfil">&larr;</a>
     <h1>Historia clínica</h1>
     <p>Ana Martínez · 2 registros</p>
   </header>
 
   <main>
-    <p>Los registros se generan automáticamente al crear una cita.</p>
+    <p class="intro">Los registros se generan automáticamente al crear una cita.</p>
 
     <ol id="lista-registros">
       <li>
@@ -44,6 +44,16 @@
       </li>
     </ol>
   </main>
+
+  <script>
+    // Regresa al perfil del mismo cliente que abrió esta pantalla
+    (function () {
+      var id = new URLSearchParams(window.location.search).get('id');
+      if (id) {
+        document.getElementById('btn-regresar').href = 'perfil-cliente.html?id=' + encodeURIComponent(id);
+      }
+    })();
+  </script>
 
 </body>
 </html>
