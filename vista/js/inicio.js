@@ -27,7 +27,7 @@
     var item = document.createElement('li');
     var enlace = document.createElement('a');
     enlace.href = 'editar-cita.html?id=' + cita.id;
-    enlace.appendChild(crearElemento('span', cita.horaInicio + ' – ' + cita.horaFin));
+    enlace.appendChild(crearElemento('span', window.FormatoHora ? window.FormatoHora.rango(cita.horaInicio, cita.horaFin) : cita.horaInicio + ' – ' + cita.horaFin));
     enlace.appendChild(crearElemento('span', formatearFecha(cita.fecha)));
     enlace.appendChild(crearElemento('strong', cita.cliente));
     enlace.appendChild(crearElemento('span', cita.servicio));
