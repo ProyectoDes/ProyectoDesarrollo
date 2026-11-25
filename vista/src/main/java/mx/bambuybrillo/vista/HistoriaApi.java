@@ -19,6 +19,7 @@ import mx.bambuybrillo.negocio.BajaProducto;
 import mx.bambuybrillo.negocio.ConsultarHistoria;
 import mx.bambuybrillo.negocio.ConsultarProductos;
 import mx.bambuybrillo.negocio.ModificarProducto;
+import mx.bambuybrillo.negocio.RegistrarProducto;
 import mx.bambuybrillo.negocio.ValidacionException;
 
 // Rutas de la historia clínica y de los productos del inventario
@@ -33,15 +34,17 @@ public class HistoriaApi {
     private final ConsultarProductos consultarProductos;
     private final ModificarProducto modificarProducto;
     private final BajaProducto bajaProducto;
+    private final RegistrarProducto registrarProducto;
 
     public HistoriaApi(ConsultarHistoria consultarHistoria, AgregarObservaciones agregarObservaciones,
                        ConsultarProductos consultarProductos, ModificarProducto modificarProducto,
-                       BajaProducto bajaProducto) {
+                       BajaProducto bajaProducto, RegistrarProducto registrarProducto) {
         this.consultarHistoria = consultarHistoria;
         this.agregarObservaciones = agregarObservaciones;
         this.consultarProductos = consultarProductos;
         this.modificarProducto = modificarProducto;
         this.bajaProducto = bajaProducto;
+        this.registrarProducto = registrarProducto;
     }
 
     public void registrarRutas(HttpServer servidor) {
@@ -98,6 +101,7 @@ public class HistoriaApi {
 
     // GET /api/productos -> productos del inventario
     // GET /api/productos?id=5 -> datos actuales de un producto
+    // POST /api/productos -> registra un producto nuevo
     // PUT /api/productos/5 -> guarda los cambios de un producto
     // DELETE /api/productos/5 -> da de baja un producto
     private void atenderProductos(HttpExchange ex) throws IOException {
@@ -110,6 +114,11 @@ public class HistoriaApi {
                 } else {
                     listarProductos(ex);
                 }
+            } else if ("POST".equals(metodo)) {
+                Map<String, List<String>> datos = leerFormulario(ex);
+                String mensaje = registrarProducto.registrar(
+                        primero(datos, "nombre"), primero(datos, "descripcion"), primero(datos, "cantidad"));
+                responder(ex, 201, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
             } else if ("PUT".equals(metodo)) {
                 actualizarProducto(ex);
             } else if ("DELETE".equals(metodo)) {
