@@ -21,6 +21,7 @@ import mx.bambuybrillo.negocio.RegistrarCliente;
 import mx.bambuybrillo.negocio.EliminarCliente;
 import mx.bambuybrillo.persistencia.ClienteRepositorioPostgres;
 import mx.bambuybrillo.negocio.AgregarObservaciones;
+import mx.bambuybrillo.negocio.BajaProducto;
 import mx.bambuybrillo.negocio.ConsultarHistoria;
 import mx.bambuybrillo.negocio.ConsultarProductos;
 import mx.bambuybrillo.negocio.ModificarProducto;
@@ -63,7 +64,8 @@ public class Servidor {
                 new ConsultarHistoria(repositorioHistoria),
                 new AgregarObservaciones(repositorioHistoria),
                 new ConsultarProductos(repositorioProductos),
-                new ModificarProducto(repositorioProductos));
+                new ModificarProducto(repositorioProductos),
+                new BajaProducto(repositorioProductos));
         apiHistoria.registrarRutas(servidor);
 
         Path carpetaVista = localizarCarpetaVista();
