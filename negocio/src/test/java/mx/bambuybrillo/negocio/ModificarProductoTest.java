@@ -20,6 +20,16 @@ class ModificarProductoTest {
         int actualizados = 0;
 
         @Override
+        public void guardar(Producto producto) {
+            productos.add(producto);
+        }
+
+        @Override
+        public boolean existeNombre(String nombre) {
+            return productos.stream().anyMatch(p -> p.getNombre().trim().equalsIgnoreCase(nombre.trim()));
+        }
+
+        @Override
         public List<Producto> listar() {
             return productos;
         }
