@@ -26,6 +26,14 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
     public static final String SQL_NOMBRE_EN_OTRO =
             "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id_producto <> ?";
 
+    public static final String SQL_ELIMINAR = "DELETE FROM productos WHERE id_producto = ?";
+
+    public static final String SQL_LIGADO_A_CITA =
+            "SELECT 1 FROM cita_producto WHERE id_producto = ? LIMIT 1";
+
+    // Código de PostgreSQL cuando un DELETE choca con una llave foránea
+    private static final String VIOLACION_LLAVE_FORANEA = "23503";
+
     private final String url;
     private final String usuario;
     private final String clave;
@@ -104,6 +112,37 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             }
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo revisar el nombre del producto.", e);
+        }
+    }
+
+    @Override
+    public boolean eliminar(int idProducto) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_ELIMINAR)) {
+            ps.setInt(1, idProducto);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            // cita_producto tiene ON DELETE NO ACTION: si alguna cita usa el producto,
+            // la base rechaza el borrado aunque no se haya revisado antes
+            if (VIOLACION_LLAVE_FORANEA.equals(e.getSQLState())) {
+                throw new ProductoLigadoException(
+                        "El producto está ligado a una cita.", e);
+            }
+            throw new IllegalStateException("No se pudo eliminar el producto.", e);
+        }
+    }
+
+    @Override
+    public boolean estaLigadoACita(int idProducto) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_LIGADO_A_CITA)) {
+            ps.setInt(1, idProducto);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(
+                    "No se pudo consultar si el producto está ligado a una cita.", e);
         }
     }
 }
