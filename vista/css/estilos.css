@@ -1396,3 +1396,15 @@ body:has([role="alertdialog"]) {
     transition: none !important;
   }
 }
+
+/* Mensajes de confirmación del inventario y de la edición de productos */
+#mensaje-inventario,
+#form-editar-producto #mensaje-formulario:not(.error) {
+  margin: 0 0 var(--espacio);
+  padding: 10px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  background: var(--color-suave-fondo);
+  color: var(--color-primario);
+  font-size: 0.875rem;
+}
