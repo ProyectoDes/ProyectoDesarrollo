@@ -17,6 +17,13 @@ import mx.bambuybrillo.entidad.Producto;
 
 public class ProductoRepositorioPostgres implements ProductoRepositorio {
 
+    public static final String SQL_GUARDAR =
+            "INSERT INTO productos (nombre, descripcion, cantidad) VALUES (?, ?, ?)";
+
+    // Solo cuenta productos activos: un nombre dado de baja se puede volver a usar
+    public static final String SQL_EXISTE_NOMBRE =
+            "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND activo";
+
     public static final String SQL_LISTAR =
             "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE activo ORDER BY nombre";
 
@@ -51,6 +58,19 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
 
     private Connection conectar() throws SQLException {
         return DriverManager.getConnection(url, usuario, clave);
+    }
+
+    @Override
+    public void guardar(Producto producto) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_GUARDAR)) {
+            ps.setString(1, producto.getNombre());
+            ps.setString(2, producto.getDescripcion());
+            ps.setInt(3, producto.getCantidad());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo guardar el producto.", e);
+        }
     }
 
     @Override
@@ -103,6 +123,19 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo actualizar el producto.", e);
+        }
+    }
+
+    @Override
+    public boolean existeNombre(String nombre) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_EXISTE_NOMBRE)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo revisar el nombre del producto.", e);
         }
     }
 
