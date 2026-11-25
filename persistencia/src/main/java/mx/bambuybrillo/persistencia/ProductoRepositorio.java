@@ -15,4 +15,10 @@ public interface ProductoRepositorio {
 
     // Revisa si otro producto (distinto al indicado) ya usa ese nombre
     boolean existeNombreEnOtroProducto(String nombre, int idProducto);
+
+    // Regresa true si se borró algún producto
+    boolean eliminar(int idProducto);
+
+    // Revisa si el producto se usó en alguna cita (tabla cita_producto)
+    boolean estaLigadoACita(int idProducto);
 }
