@@ -5,10 +5,14 @@
   var lista = document.getElementById('lista-productos');
   var todos = [];
 
-  // Al regresar de editar un producto se confirma el cambio
+  // Al regresar de editar o dar de baja un producto se confirma el cambio
   var aviso = document.getElementById('mensaje-inventario');
-  if (aviso && new URLSearchParams(window.location.search).get('actualizado') === '1') {
+  var parametros = new URLSearchParams(window.location.search);
+  if (aviso && parametros.get('actualizado') === '1') {
     aviso.textContent = 'Producto actualizado correctamente.';
+    aviso.hidden = false;
+  } else if (aviso && parametros.get('baja') === '1') {
+    aviso.textContent = 'Producto dado de baja correctamente.';
     aviso.hidden = false;
   }
 
