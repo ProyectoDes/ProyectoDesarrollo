@@ -20,7 +20,8 @@
     nombre.textContent = producto.nombre;
     texto.appendChild(nombre);
     texto.appendChild(document.createTextNode(
-      ' dejará de aparecer en el inventario. Esta acción no se puede deshacer.'));
+      ' dejará de aparecer en el inventario. Seguirá apareciendo en la historia clínica'
+      + ' de las citas donde ya se usó.'));
   }
 
   if (!/^\d+$/.test(idProducto || '')) {
@@ -67,9 +68,9 @@
         if (resultado.ok) {
           window.location.href = 'inventario.html?baja=1';
         } else {
-          // Si está ligado a una cita, el botón se queda desactivado
+          // Si está en una cita que todavía no pasa, el botón se queda desactivado
           mostrarError(resultado.cuerpo.error || 'No se pudo dar de baja el producto.');
-          boton.disabled = /ligado a una cita/.test(resultado.cuerpo.error || '');
+          boton.disabled = /todavía no pasa/.test(resultado.cuerpo.error || '');
         }
       })
       .catch(function () {
