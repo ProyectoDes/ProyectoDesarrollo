@@ -44,6 +44,16 @@ class ModificarProductoTest {
             return productos.stream().anyMatch(p -> p.getIdProducto() != idProducto
                     && p.getNombre().trim().equalsIgnoreCase(nombre.trim()));
         }
+
+        @Override
+        public boolean eliminar(int idProducto) {
+            return productos.removeIf(p -> p.getIdProducto() == idProducto);
+        }
+
+        @Override
+        public boolean estaLigadoACita(int idProducto) {
+            return false;
+        }
     }
 
     private RepositorioFalso repositorio;
