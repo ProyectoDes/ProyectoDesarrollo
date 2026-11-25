@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,25 +18,26 @@ import mx.bambuybrillo.entidad.Producto;
 public class ProductoRepositorioPostgres implements ProductoRepositorio {
 
     public static final String SQL_LISTAR =
-            "SELECT id_producto, nombre, descripcion, cantidad FROM productos ORDER BY nombre";
+            "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE activo ORDER BY nombre";
 
     public static final String SQL_BUSCAR_POR_ID =
-            "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE id_producto = ?";
+            "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE id_producto = ? AND activo";
 
     // fecha_modificacion la actualiza el trigger trg_productos_modificacion
     public static final String SQL_ACTUALIZAR =
-            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ? WHERE id_producto = ?";
+            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ? WHERE id_producto = ? AND activo";
 
     public static final String SQL_NOMBRE_EN_OTRO =
-            "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id_producto <> ?";
+            "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id_producto <> ? AND activo";
 
-    public static final String SQL_ELIMINAR = "DELETE FROM productos WHERE id_producto = ?";
+    // Baja lógica: no se borra la fila para que la historia clínica siga mostrando el producto
+    public static final String SQL_ELIMINAR =
+            "UPDATE productos SET activo = FALSE WHERE id_producto = ? AND activo";
 
-    public static final String SQL_LIGADO_A_CITA =
-            "SELECT 1 FROM cita_producto WHERE id_producto = ? LIMIT 1";
-
-    // Código de PostgreSQL cuando un DELETE choca con una llave foránea
-    private static final String VIOLACION_LLAVE_FORANEA = "23503";
+    // Citas que todavía no pasan: de un día posterior, o de hoy que aún no terminan
+    public static final String SQL_EN_CITA_PENDIENTE =
+            "SELECT 1 FROM cita_producto cp JOIN citas c ON c.id_cita = cp.id_cita "
+          + "WHERE cp.id_producto = ? AND (c.fecha > ? OR (c.fecha = ? AND c.hora_fin > ?)) LIMIT 1";
 
     private final String url;
     private final String usuario;
@@ -122,27 +127,24 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setInt(1, idProducto);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            // cita_producto tiene ON DELETE NO ACTION: si alguna cita usa el producto,
-            // la base rechaza el borrado aunque no se haya revisado antes
-            if (VIOLACION_LLAVE_FORANEA.equals(e.getSQLState())) {
-                throw new ProductoLigadoException(
-                        "El producto está ligado a una cita.", e);
-            }
-            throw new IllegalStateException("No se pudo eliminar el producto.", e);
+            throw new IllegalStateException("No se pudo dar de baja el producto.", e);
         }
     }
 
     @Override
-    public boolean estaLigadoACita(int idProducto) {
+    public boolean estaEnCitaPendiente(int idProducto, LocalDate hoy, LocalTime ahora) {
         try (Connection conexion = conectar();
-             PreparedStatement ps = conexion.prepareStatement(SQL_LIGADO_A_CITA)) {
+             PreparedStatement ps = conexion.prepareStatement(SQL_EN_CITA_PENDIENTE)) {
             ps.setInt(1, idProducto);
+            ps.setDate(2, Date.valueOf(hoy));
+            ps.setDate(3, Date.valueOf(hoy));
+            ps.setTime(4, Time.valueOf(ahora.withNano(0)));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "No se pudo consultar si el producto está ligado a una cita.", e);
+                    "No se pudo consultar las citas del producto.", e);
         }
     }
 }
