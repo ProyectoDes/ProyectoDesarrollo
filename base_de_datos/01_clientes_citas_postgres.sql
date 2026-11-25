@@ -45,9 +45,15 @@ id_producto SERIAL PRIMARY KEY,
 nombre TEXT NOT NULL,
 descripcion TEXT,
 cantidad INTEGER NOT NULL DEFAULT 0 CHECK (cantidad >= 0),
+activo BOOLEAN NOT NULL DEFAULT TRUE,
 fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Baja lógica: un producto dado de baja deja de salir en el inventario,
+-- pero sigue en la historia clínica de las citas donde se usó.
+-- (Para bases que ya existían sin esta columna)
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS activo BOOLEAN NOT NULL DEFAULT TRUE;
 
 CREATE TABLE IF NOT EXISTS cita_producto (
 id_cita INTEGER NOT NULL REFERENCES citas (id_cita) ON DELETE CASCADE,
