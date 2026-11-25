@@ -5,6 +5,13 @@
   var lista = document.getElementById('lista-productos');
   var todos = [];
 
+  // Al regresar de editar un producto se confirma el cambio
+  var aviso = document.getElementById('mensaje-inventario');
+  if (aviso && new URLSearchParams(window.location.search).get('actualizado') === '1') {
+    aviso.textContent = 'Producto actualizado correctamente.';
+    aviso.hidden = false;
+  }
+
   // Quita acentos y mayúsculas para que "serum" encuentre "Sérum"
   function normalizar(texto) {
     return String(texto || '')
