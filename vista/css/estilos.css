@@ -1397,8 +1397,9 @@ body:has([role="alertdialog"]) {
   }
 }
 
-/* Mensajes de confirmación del inventario y de la edición de productos */
+/* Mensajes de confirmación del inventario, el alta y la edición de productos */
 #mensaje-inventario,
+#form-agregar-producto #mensaje-formulario:not(.error),
 #form-editar-producto #mensaje-formulario:not(.error) {
   margin: 0 0 var(--espacio);
   padding: 10px 12px;
