@@ -1,5 +1,7 @@
 package mx.bambuybrillo.negocio;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +53,7 @@ class ModificarProductoTest {
         }
 
         @Override
-        public boolean estaLigadoACita(int idProducto) {
+        public boolean estaEnCitaPendiente(int idProducto, LocalDate hoy, LocalTime ahora) {
             return false;
         }
     }
