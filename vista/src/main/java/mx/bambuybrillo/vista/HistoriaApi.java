@@ -17,9 +17,10 @@ import mx.bambuybrillo.entidad.RegistroHistoria;
 import mx.bambuybrillo.negocio.AgregarObservaciones;
 import mx.bambuybrillo.negocio.ConsultarHistoria;
 import mx.bambuybrillo.negocio.ConsultarProductos;
+import mx.bambuybrillo.negocio.ModificarProducto;
 import mx.bambuybrillo.negocio.ValidacionException;
 
-// Rutas de la historia clínica y de la lista de productos del inventario
+// Rutas de la historia clínica y de los productos del inventario
 public class HistoriaApi {
 
     private static final String RUTA_HISTORIA = "/api/historia";
@@ -29,12 +30,14 @@ public class HistoriaApi {
     private final ConsultarHistoria consultarHistoria;
     private final AgregarObservaciones agregarObservaciones;
     private final ConsultarProductos consultarProductos;
+    private final ModificarProducto modificarProducto;
 
     public HistoriaApi(ConsultarHistoria consultarHistoria, AgregarObservaciones agregarObservaciones,
-                       ConsultarProductos consultarProductos) {
+                       ConsultarProductos consultarProductos, ModificarProducto modificarProducto) {
         this.consultarHistoria = consultarHistoria;
         this.agregarObservaciones = agregarObservaciones;
         this.consultarProductos = consultarProductos;
+        this.modificarProducto = modificarProducto;
     }
 
     public void registrarRutas(HttpServer servidor) {
@@ -90,24 +93,62 @@ public class HistoriaApi {
     }
 
     // GET /api/productos -> productos del inventario
+    // GET /api/productos?id=5 -> datos actuales de un producto
+    // PUT /api/productos/5 -> guarda los cambios de un producto
     private void atenderProductos(HttpExchange ex) throws IOException {
         try {
-            if (!"GET".equals(ex.getRequestMethod())) {
-                responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
-                return;
-            }
-            List<Producto> productos = consultarProductos.listar();
-            StringBuilder json = new StringBuilder("[");
-            for (int i = 0; i < productos.size(); i++) {
-                if (i > 0) {
-                    json.append(",");
+            String metodo = ex.getRequestMethod();
+            if ("GET".equals(metodo)) {
+                String id = leerConsulta(ex).get("id");
+                if (id != null) {
+                    responder(ex, 200, aJson(modificarProducto.buscar(aEntero(id))));
+                } else {
+                    listarProductos(ex);
                 }
-                json.append(aJson(productos.get(i)));
+            } else if ("PUT".equals(metodo)) {
+                actualizarProducto(ex);
+            } else {
+                responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
             }
-            json.append("]");
-            responder(ex, 200, json.toString());
         } catch (RuntimeException e) {
             manejarError(ex, e);
+        }
+    }
+
+    private void listarProductos(HttpExchange ex) throws IOException {
+        List<Producto> productos = consultarProductos.listar();
+        StringBuilder json = new StringBuilder("[");
+        for (int i = 0; i < productos.size(); i++) {
+            if (i > 0) {
+                json.append(",");
+            }
+            json.append(aJson(productos.get(i)));
+        }
+        json.append("]");
+        responder(ex, 200, json.toString());
+    }
+
+    private void actualizarProducto(HttpExchange ex) throws IOException {
+        String ruta = ex.getRequestURI().getPath();
+        int idProducto = ruta.length() > RUTA_PRODUCTOS.length() + 1
+                ? aEntero(ruta.substring(RUTA_PRODUCTOS.length() + 1))
+                : 0;
+        Map<String, List<String>> datos = leerFormulario(ex);
+        Producto producto = new Producto(
+                idProducto,
+                primero(datos, "nombre"),
+                primero(datos, "descripcion"),
+                leerCantidad(primero(datos, "cantidad")));
+        String mensaje = modificarProducto.modificar(producto);
+        responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+    }
+
+    // La cantidad debe ser un número entero; si no, se avisa en el campo
+    private int leerCantidad(String texto) {
+        try {
+            return Integer.parseInt(texto == null ? "" : texto.trim());
+        } catch (NumberFormatException e) {
+            throw new ValidacionException("cantidad", "La cantidad debe ser un número entero.");
         }
     }
 
