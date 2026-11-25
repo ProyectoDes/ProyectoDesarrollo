@@ -15,6 +15,7 @@ import com.sun.net.httpserver.HttpServer;
 import mx.bambuybrillo.entidad.Producto;
 import mx.bambuybrillo.entidad.RegistroHistoria;
 import mx.bambuybrillo.negocio.AgregarObservaciones;
+import mx.bambuybrillo.negocio.BajaProducto;
 import mx.bambuybrillo.negocio.ConsultarHistoria;
 import mx.bambuybrillo.negocio.ConsultarProductos;
 import mx.bambuybrillo.negocio.ModificarProducto;
@@ -31,13 +32,16 @@ public class HistoriaApi {
     private final AgregarObservaciones agregarObservaciones;
     private final ConsultarProductos consultarProductos;
     private final ModificarProducto modificarProducto;
+    private final BajaProducto bajaProducto;
 
     public HistoriaApi(ConsultarHistoria consultarHistoria, AgregarObservaciones agregarObservaciones,
-                       ConsultarProductos consultarProductos, ModificarProducto modificarProducto) {
+                       ConsultarProductos consultarProductos, ModificarProducto modificarProducto,
+                       BajaProducto bajaProducto) {
         this.consultarHistoria = consultarHistoria;
         this.agregarObservaciones = agregarObservaciones;
         this.consultarProductos = consultarProductos;
         this.modificarProducto = modificarProducto;
+        this.bajaProducto = bajaProducto;
     }
 
     public void registrarRutas(HttpServer servidor) {
@@ -95,6 +99,7 @@ public class HistoriaApi {
     // GET /api/productos -> productos del inventario
     // GET /api/productos?id=5 -> datos actuales de un producto
     // PUT /api/productos/5 -> guarda los cambios de un producto
+    // DELETE /api/productos/5 -> da de baja un producto
     private void atenderProductos(HttpExchange ex) throws IOException {
         try {
             String metodo = ex.getRequestMethod();
@@ -107,6 +112,9 @@ public class HistoriaApi {
                 }
             } else if ("PUT".equals(metodo)) {
                 actualizarProducto(ex);
+            } else if ("DELETE".equals(metodo)) {
+                String mensaje = bajaProducto.eliminar(idDeRuta(ex));
+                responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
             } else {
                 responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
             }
@@ -128,11 +136,16 @@ public class HistoriaApi {
         responder(ex, 200, json.toString());
     }
 
-    private void actualizarProducto(HttpExchange ex) throws IOException {
+    // Lee el id que viene al final de la ruta: /api/productos/5 -> 5
+    private int idDeRuta(HttpExchange ex) {
         String ruta = ex.getRequestURI().getPath();
-        int idProducto = ruta.length() > RUTA_PRODUCTOS.length() + 1
+        return ruta.length() > RUTA_PRODUCTOS.length() + 1
                 ? aEntero(ruta.substring(RUTA_PRODUCTOS.length() + 1))
                 : 0;
+    }
+
+    private void actualizarProducto(HttpExchange ex) throws IOException {
+        int idProducto = idDeRuta(ex);
         Map<String, List<String>> datos = leerFormulario(ex);
         Producto producto = new Producto(
                 idProducto,
