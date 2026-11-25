@@ -14,18 +14,18 @@ import mx.bambuybrillo.entidad.Producto;
 public class ProductoRepositorioPostgres implements ProductoRepositorio {
 
     public static final String SQL_GUARDAR =
-            "INSERT INTO productos (nombre, descripcion, cantidad, precio) VALUES (?, ?, ?, ?)";
+            "INSERT INTO productos (nombre, descripcion, cantidad) VALUES (?, ?, ?)";
 
     public static final String SQL_LISTAR =
-            "SELECT id_producto, nombre, descripcion, cantidad, precio "
+            "SELECT id_producto, nombre, descripcion, cantidad "
                     + "FROM productos ORDER BY nombre";
 
     public static final String SQL_BUSCAR_POR_ID =
-            "SELECT id_producto, nombre, descripcion, cantidad, precio "
+            "SELECT id_producto, nombre, descripcion, cantidad "
                     + "FROM productos WHERE id_producto = ?";
 
     public static final String SQL_ACTUALIZAR =
-            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ?, precio = ? "
+            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ? "
                     + "WHERE id_producto = ?";
 
     public static final String SQL_ELIMINAR = "DELETE FROM productos WHERE id_producto = ?";
@@ -55,8 +55,7 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
                 rs.getInt("id_producto"),
                 rs.getString("nombre"),
                 rs.getString("descripcion"),
-                rs.getInt("cantidad"),
-                rs.getBigDecimal("precio"));
+                rs.getInt("cantidad"));
     }
 
     @Override
@@ -66,7 +65,6 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getDescripcion());
             ps.setInt(3, producto.getCantidad());
-            ps.setBigDecimal(4, producto.getPrecio());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo guardar el producto.", e);
@@ -111,8 +109,7 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getDescripcion());
             ps.setInt(3, producto.getCantidad());
-            ps.setBigDecimal(4, producto.getPrecio());
-            ps.setInt(5, producto.getIdProducto());
+            ps.setInt(4, producto.getIdProducto());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo actualizar el producto.", e);
@@ -153,8 +150,7 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
                 return rs.next() && rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "No se pudo consultar si el nombre del producto ya existe.", e);
+            throw new IllegalStateException("No se pudo consultar si el producto ya existe.", e);
         }
     }
 }
