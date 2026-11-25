@@ -1,5 +1,7 @@
 package mx.bambuybrillo.persistencia;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +18,10 @@ public interface ProductoRepositorio {
     // Revisa si otro producto (distinto al indicado) ya usa ese nombre
     boolean existeNombreEnOtroProducto(String nombre, int idProducto);
 
-    // Regresa true si se borró algún producto
+    // Da de baja el producto: deja de salir en el inventario, pero sigue en la historia clínica.
+    // Regresa true si se dio de baja algún producto
     boolean eliminar(int idProducto);
 
-    // Revisa si el producto se usó en alguna cita (tabla cita_producto)
-    boolean estaLigadoACita(int idProducto);
+    // Revisa si el producto está en alguna cita que todavía no pasa
+    boolean estaEnCitaPendiente(int idProducto, LocalDate hoy, LocalTime ahora);
 }
