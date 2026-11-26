@@ -16,7 +16,13 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
 
     public static final String SQL_GUARDAR =
             "INSERT INTO citas (id_cliente, fecha, hora_inicio, hora_fin, servicio) "
-                    + "VALUES (?, ?::date, ?::time, ?::time, ?)";
+                    + "VALUES (?, ?::date, ?::time, ?::time, ?) RETURNING id_cita";
+
+    // Solo liga productos activos del inventario; si el id no existe o ya se dio de baja, se ignora
+    public static final String SQL_GUARDAR_PRODUCTO =
+            "INSERT INTO cita_producto (id_cita, id_producto, cantidad_usada) "
+                    + "SELECT ?, id_producto, 1 FROM productos WHERE id_producto = ? AND activo "
+                    + "ON CONFLICT (id_cita, id_producto) DO NOTHING";
 
     public static final String SQL_LISTAR_CON_CLIENTE =
             "SELECT c.id_cita, c.id_cliente, cl.nombre, c.fecha::text AS fecha, "
@@ -65,14 +71,35 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
 
     @Override
     public void guardar(Cita cita) {
-        try (Connection conexion = conectar();
-             PreparedStatement ps = conexion.prepareStatement(SQL_GUARDAR)) {
-            ps.setInt(1, cita.getIdCliente());
-            ps.setString(2, cita.getFecha());
-            ps.setString(3, cita.getHoraInicio());
-            ps.setString(4, cita.getHoraFin());
-            ps.setString(5, cita.getServicio());
-            ps.executeUpdate();
+        try (Connection conexion = conectar()) {
+            conexion.setAutoCommit(false);
+            try {
+                int idCita;
+                try (PreparedStatement ps = conexion.prepareStatement(SQL_GUARDAR)) {
+                    ps.setInt(1, cita.getIdCliente());
+                    ps.setString(2, cita.getFecha());
+                    ps.setString(3, cita.getHoraInicio());
+                    ps.setString(4, cita.getHoraFin());
+                    ps.setString(5, cita.getServicio());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        idCita = rs.getInt(1);
+                    }
+                }
+                try (PreparedStatement ps = conexion.prepareStatement(SQL_GUARDAR_PRODUCTO)) {
+                    for (int idProducto : cita.getProductos()) {
+                        ps.setInt(1, idCita);
+                        ps.setInt(2, idProducto);
+                        ps.addBatch();
+                    }
+                    ps.executeBatch();
+                }
+                conexion.commit();
+                cita.setIdCita(idCita);
+            } catch (SQLException e) {
+                conexion.rollback();
+                throw e;
+            }
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo guardar la cita.", e);
         }
