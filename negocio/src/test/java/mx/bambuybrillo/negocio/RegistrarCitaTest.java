@@ -18,12 +18,14 @@ class RegistrarCitaTest {
 
     static class RepositorioFalso implements CitaRepositorio {
         int guardadas = 0;
+        Cita ultima;
         boolean clienteExiste = true;
         boolean traslape = false;
 
         @Override
         public void guardar(Cita cita) {
             guardadas++;
+            ultima = cita;
         }
 
         @Override
@@ -198,5 +200,20 @@ class RegistrarCitaTest {
         cita.setHoraFin("11:30");
         assertEquals("Cita registrada correctamente.", registrar.registrar(cita));
         assertEquals(1, repositorio.guardadas);
+    }
+
+    @Test
+    void productosElegidosSeGuardanSinRepetidosNiInvalidos() {
+        Cita cita = citaValida();
+        cita.setProductos(new ArrayList<>(List.of(3, 7, 3, 0, -2, 12)));
+        registrar.registrar(cita);
+        assertEquals(List.of(3, 7, 12), repositorio.ultima.getProductos());
+    }
+
+    @Test
+    void citaSinProductosSeGuarda() {
+        registrar.registrar(citaValida());
+        assertEquals(1, repositorio.guardadas);
+        assertTrue(repositorio.ultima.getProductos().isEmpty());
     }
 }
