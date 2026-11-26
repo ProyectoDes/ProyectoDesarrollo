@@ -20,32 +20,28 @@
     <form id="form-periodo" action="reportes.html" method="get">
       <div>
         <label for="desde">Desde</label>
-        <input type="date" id="desde" name="desde" value="2026-11-02" required>
+        <input type="date" id="desde" name="desde" required>
       </div>
       <div>
         <label for="hasta">Hasta</label>
-        <input type="date" id="hasta" name="hasta" value="2026-11-02" required>
+        <input type="date" id="hasta" name="hasta" required>
       </div>
     </form>
 
     <section id="resumen">
-      <h2>3 citas</h2>
-      <p>2 de noviembre de 2026</p>
+      <h2 id="total-reporte">Cargando...</h2>
+      <p id="periodo-reporte"></p>
     </section>
 
     <section id="desglose">
       <h2>Desglose por servicio</h2>
       <table>
-        <tbody>
-          <tr><th scope="row">Limpieza facial</th><td>1</td></tr>
-          <tr><th scope="row">Manicure</th><td>1</td></tr>
-          <tr><th scope="row">Depilación</th><td>0</td></tr>
-          <tr><th scope="row">Masaje relajante</th><td>1</td></tr>
-        </tbody>
+        <tbody id="tabla-servicios"></tbody>
       </table>
-      <p>Incluye todas las citas registradas en el rango seleccionado.</p>
+      <p id="nota-reporte">Incluye todas las citas registradas en el rango seleccionado.</p>
     </section>
   </main>
 
+  <script src="js/reportes.js"></script>
 </body>
 </html>
