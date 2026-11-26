@@ -23,6 +23,7 @@ public class ClientesApi {
     private static final String RUTA_REGISTRO = "/api/clientes/registro";
     private static final String RUTA_LISTA = "/api/clientes/lista";
     private static final String RUTA_BAJA = "/api/clientes/baja/";
+    private static final String RUTA_MODIFICAR = "/api/clientes/modificar/";
 
     private final RegistrarCliente registrarCliente;
     private final ConsultarClientes consultarClientes;
@@ -39,6 +40,30 @@ public class ClientesApi {
         servidor.createContext(RUTA_REGISTRO, this::atenderRegistro);
         servidor.createContext(RUTA_LISTA, this::atenderLista);
         servidor.createContext(RUTA_BAJA, this::atenderBaja);
+        servidor.createContext(RUTA_MODIFICAR, this::atenderModificar);
+    }
+
+    // POST /api/clientes/modificar/5 -> guarda los cambios del perfil del cliente
+    private void atenderModificar(HttpExchange ex) throws IOException {
+        try {
+            if (!"POST".equals(ex.getRequestMethod())) {
+                responder(ex, 405, "{\"error\":\"Metodo no permitido.\"}");
+                return;
+            }
+            int id = aEntero(ex.getRequestURI().getPath().substring(RUTA_MODIFICAR.length()));
+            Map<String, String> datos = leerFormulario(ex);
+
+            Cliente cliente = new Cliente();
+            cliente.setIdCliente(id);
+            cliente.setNombreCliente(datos.getOrDefault("nombre", "").trim());
+            cliente.setEdadCliente(aEntero(datos.get("edad")));
+            cliente.setTelefonoCliente(datos.getOrDefault("telefono", "").trim());
+
+            String mensaje = registrarCliente.modificar(cliente);
+            responder(ex, 200, "{\"mensaje\":\"" + escapar(mensaje) + "\"}");
+        } catch (RuntimeException e) {
+            manejarError(ex, e);
+        }
     }
 
     // DELETE /api/clientes/baja/5 -> borra al cliente con sus citas e historia clínica
