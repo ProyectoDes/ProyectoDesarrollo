@@ -1397,6 +1397,19 @@ body:has([role="alertdialog"]) {
   }
 }
 
+/* Mensajes de confirmación del inventario, el alta y la edición de productos */
+#mensaje-inventario,
+#form-agregar-producto #mensaje-formulario:not(.error),
+#form-editar-producto #mensaje-formulario:not(.error) {
+  margin: 0 0 var(--espacio);
+  padding: 10px 12px;
+  border: 1px solid var(--color-borde);
+  border-radius: 8px;
+  background: var(--color-suave-fondo);
+  color: var(--color-primario);
+  font-size: 0.875rem;
+}
+
 /* Productos con stock bajo */
 #lista-productos li.stock-bajo a {
     border-left: 4px solid #c62828;

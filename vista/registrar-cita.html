@@ -33,13 +33,12 @@
 
       <div>
         <label for="hora-inicio">Hora de inicio</label>
-        <input type="time" id="hora-inicio" name="hora_inicio" required>
+          <select id="hora-inicio" name="hora_inicio" required></select>
       </div>
 
       <div>
         <label for="hora-fin">Hora de fin</label>
-        <input type="time" id="hora-fin" name="hora_fin" required>
-      </div>
+          <select id="hora-fin" name="hora_fin" required></select>      </div>
 
       <div id="aviso-horario-ocupado" role="alert" hidden>
         <strong>Horario ocupado</strong>
@@ -79,6 +78,8 @@
     </form>
   </main>
 
+  <script src="js/formato-hora.js"></script>
+  <script src="js/horas-media-hora.js"></script>
   <script src="js/registrar-cita.js"></script>
 </body>
 </html>

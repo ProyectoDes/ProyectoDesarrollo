@@ -18,6 +18,14 @@ fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Sesiones abiertas: se guarda solo el hash del token de la cookie, nunca el token
+CREATE TABLE IF NOT EXISTS sesiones (
+token_hash TEXT PRIMARY KEY,
+id_usuario INTEGER NOT NULL REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+expira TIMESTAMP NOT NULL,
+fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS citas (
 id_cita SERIAL PRIMARY KEY,
 id_cliente INTEGER NOT NULL REFERENCES clientes (id_cliente) ON DELETE NO ACTION,
@@ -45,9 +53,15 @@ id_producto SERIAL PRIMARY KEY,
 nombre TEXT NOT NULL,
 descripcion TEXT,
 cantidad INTEGER NOT NULL DEFAULT 0 CHECK (cantidad >= 0),
+activo BOOLEAN NOT NULL DEFAULT TRUE,
 fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Baja lógica: un producto dado de baja deja de salir en el inventario,
+-- pero sigue en la historia clínica de las citas donde se usó.
+-- (Para bases que ya existían sin esta columna)
+ALTER TABLE productos ADD COLUMN IF NOT EXISTS activo BOOLEAN NOT NULL DEFAULT TRUE;
 
 CREATE TABLE IF NOT EXISTS cita_producto (
 id_cita INTEGER NOT NULL REFERENCES citas (id_cita) ON DELETE CASCADE,

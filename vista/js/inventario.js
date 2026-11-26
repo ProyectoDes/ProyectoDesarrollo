@@ -6,6 +6,17 @@
   var todos = [];
     var STOCK_BAJO = 5;
 
+  // Al regresar de editar o dar de baja un producto se confirma el cambio
+  var aviso = document.getElementById('mensaje-inventario');
+  var parametros = new URLSearchParams(window.location.search);
+  if (aviso && parametros.get('actualizado') === '1') {
+    aviso.textContent = 'Producto actualizado correctamente.';
+    aviso.hidden = false;
+  } else if (aviso && parametros.get('baja') === '1') {
+    aviso.textContent = 'Producto dado de baja correctamente.';
+    aviso.hidden = false;
+  }
+
   // Quita acentos y mayúsculas para que "serum" encuentre "Sérum"
   function normalizar(texto) {
     return String(texto || '')

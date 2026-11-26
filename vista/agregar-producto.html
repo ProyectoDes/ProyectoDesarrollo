@@ -26,15 +26,9 @@
       </div>
 
       <div>
-        <label for="categoria">Categoría</label>
-        <select id="categoria" name="categoria" required>
-          <option value="">Selecciona una categoría</option>
-          <option value="Cuidado facial">Cuidado facial</option>
-          <option value="Masaje">Masaje</option>
-          <option value="Uñas">Uñas</option>
-          <option value="Depilación">Depilación</option>
-        </select>
-        <p class="error" id="error-categoria" hidden></p>
+        <label for="descripcion">Descripción</label>
+        <input type="text" id="descripcion" name="descripcion" maxlength="120" placeholder="Opcional">
+        <p class="error" id="error-descripcion" hidden></p>
       </div>
 
       <div>
@@ -44,9 +38,12 @@
         <p class="error" id="error-cantidad" hidden></p>
       </div>
 
+      <p id="mensaje-formulario" role="status" hidden></p>
+
       <button type="submit" id="btn-guardar">Guardar</button>
     </form>
   </main>
 
+  <script src="js/agregar-producto.js"></script>
 </body>
 </html>

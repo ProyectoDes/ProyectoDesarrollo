@@ -41,6 +41,14 @@ public class RegistrarCita {
         }
         LocalTime inicio = leerHora(cita.getHoraInicio(), "La hora de inicio", "horaInicio");
         LocalTime fin = leerHora(cita.getHoraFin(), "La hora de fin", "horaFin");
+
+        if (!esMediaHora(inicio)) {
+            throw new ValidacionException("horaInicio", "La hora de inicio debe ser en punto o y media.");
+        }
+        if (!esMediaHora(fin)) {
+            throw new ValidacionException("horaFin", "La hora de fin debe ser en punto o y media.");
+        }
+
         if (!fin.isAfter(inicio)) {
             throw new ValidacionException("horaFin", "La hora de fin debe ser posterior a la hora de inicio.");
         }
@@ -71,5 +79,9 @@ public class RegistrarCita {
         } catch (DateTimeParseException e) {
             throw new ValidacionException(campo, descripcion + " no es válida.");
         }
+    }
+
+    private boolean esMediaHora(LocalTime hora) {
+        return hora.getSecond() == 0 && hora.getMinute() % 30 == 0;
     }
 }

@@ -21,10 +21,17 @@ import mx.bambuybrillo.negocio.RegistrarCliente;
 import mx.bambuybrillo.negocio.EliminarCliente;
 import mx.bambuybrillo.persistencia.ClienteRepositorioPostgres;
 import mx.bambuybrillo.negocio.AgregarObservaciones;
+import mx.bambuybrillo.negocio.BajaProducto;
 import mx.bambuybrillo.negocio.ConsultarHistoria;
 import mx.bambuybrillo.negocio.ConsultarProductos;
+import mx.bambuybrillo.negocio.ModificarProducto;
+import mx.bambuybrillo.negocio.RegistrarProducto;
 import mx.bambuybrillo.persistencia.HistoriaRepositorioPostgres;
 import mx.bambuybrillo.persistencia.ProductoRepositorioPostgres;
+import mx.bambuybrillo.negocio.IniciarSesion;
+import mx.bambuybrillo.negocio.ValidarSesion;
+import mx.bambuybrillo.persistencia.SesionRepositorioPostgres;
+import mx.bambuybrillo.persistencia.UsuarioRepositorioPostgres;
 
 public class Servidor {
 
@@ -43,7 +50,15 @@ public class Servidor {
                 new EliminarCita(repositorio),
                 new ModificarCita(repositorio));
 
-        HttpServer servidor = HttpServer.create(new InetSocketAddress(PUERTO), 0);
+        // Todas las rutas pasan por el filtro: sin sesión no se puede usar el sistema
+        SesionRepositorioPostgres repositorioSesiones = new SesionRepositorioPostgres(url, usuario, clave);
+        ValidarSesion validarSesion = new ValidarSesion(repositorioSesiones);
+        HttpServer servidor = new ServidorConSesion(
+                HttpServer.create(new InetSocketAddress(PUERTO), 0), new FiltroSesion(validarSesion));
+
+        new SesionApi(
+                new IniciarSesion(new UsuarioRepositorioPostgres(url, usuario, clave), repositorioSesiones),
+                validarSesion).registrarRutas(servidor);
         api.registrarRutas(servidor);
 
         ClienteRepositorioPostgres repositorioClientes =
@@ -56,10 +71,15 @@ public class Servidor {
 
         HistoriaRepositorioPostgres repositorioHistoria =
                 new HistoriaRepositorioPostgres(url, usuario, clave);
+        ProductoRepositorioPostgres repositorioProductos =
+                new ProductoRepositorioPostgres(url, usuario, clave);
         HistoriaApi apiHistoria = new HistoriaApi(
                 new ConsultarHistoria(repositorioHistoria),
                 new AgregarObservaciones(repositorioHistoria),
-                new ConsultarProductos(new ProductoRepositorioPostgres(url, usuario, clave)));
+                new ConsultarProductos(repositorioProductos),
+                new ModificarProducto(repositorioProductos),
+                new BajaProducto(repositorioProductos),
+                new RegistrarProducto(repositorioProductos));
         apiHistoria.registrarRutas(servidor);
 
         Path carpetaVista = localizarCarpetaVista();

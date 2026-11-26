@@ -176,4 +176,27 @@ class RegistrarCitaTest {
         assertEquals("Cita registrada correctamente.", registrar.registrar(citaValida()));
         assertEquals(1, repositorio.guardadas);
     }
+
+    @Test
+    void horaInicioFueraDeMediaHoraFalla() {
+        Cita cita = citaValida();
+        cita.setHoraInicio("10:15");
+        verificarFalla(cita, "horaInicio", "La hora de inicio debe ser en punto o y media.");
+    }
+
+    @Test
+    void horaFinFueraDeMediaHoraFalla() {
+        Cita cita = citaValida();
+        cita.setHoraFin("11:10");
+        verificarFalla(cita, "horaFin", "La hora de fin debe ser en punto o y media.");
+    }
+
+    @Test
+    void horasEnPuntoYEnMediaSonValidas() {
+        Cita cita = citaValida();
+        cita.setHoraInicio("10:30");
+        cita.setHoraFin("11:30");
+        assertEquals("Cita registrada correctamente.", registrar.registrar(cita));
+        assertEquals(1, repositorio.guardadas);
+    }
 }

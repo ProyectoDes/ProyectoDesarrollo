@@ -86,11 +86,26 @@
     }
   }
 
+  // Selecciona la hora guardada en la lista de media hora.
+  // Si es una cita vieja con otra hora (por ejemplo 10:15), se agrega para que se vea.
+  function elegirHora(select, valor) {
+    var existe = Array.prototype.some.call(select.options, function (opcion) {
+      return opcion.value === valor;
+    });
+    if (!existe && valor) {
+      var opcion = document.createElement('option');
+      opcion.value = valor;
+      opcion.textContent = window.FormatoHora ? window.FormatoHora.hora(valor) : valor;
+      select.appendChild(opcion);
+    }
+    select.value = valor;
+  }
+
   function llenarFormulario(cita, clientes) {
     llenarClientes(clientes, cita.idCliente);
     campoFecha.value = cita.fecha;
-    campoInicio.value = cita.horaInicio;
-    campoFin.value = cita.horaFin;
+    elegirHora(campoInicio, cita.horaInicio);
+    elegirHora(campoFin, cita.horaFin);
     llenarServicio(cita.servicio);
 
     textoCliente.textContent = cita.cliente;
