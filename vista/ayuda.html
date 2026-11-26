@@ -21,30 +21,139 @@
       <h2>Guía básica</h2>
       <ul>
         <li>
-          <h3>Organiza tus citas</h3>
-          <p>En Citas, agrega, edita o elimina una cita. Revisa las horas antes de guardar.</p>
+          <h3>1. Registra a tu cliente</h3>
+          <p>En Clientes, toca "Nuevo cliente" y escribe su nombre, edad y teléfono. Sin cliente registrado no se puede agendar una cita.</p>
         </li>
         <li>
-          <h3>Consulta a tus clientes</h3>
-          <p>Abre un perfil para ver sus citas y agregar tratamientos a su Historia clínica.</p>
+          <h3>2. Agenda la cita</h3>
+          <p>En Citas, toca "+ Nueva cita" y elige al cliente, la fecha, la hora de inicio y el servicio. La hora de fin se pone sola una hora después; cámbiala si el servicio dura más o menos.</p>
         </li>
         <li>
-          <h3>Mantén tu inventario</h3>
-          <p>Agrega productos, modifica cantidades o da de baja los que ya no uses.</p>
+          <h3>3. Anota lo que hiciste</h3>
+          <p>Abre el perfil del cliente y entra a su Historia clínica para agregar observaciones y los productos que usaste.</p>
         </li>
         <li>
-          <h3>Revisa tus reportes</h3>
-          <p>En Más → Reportes, elige las fechas para consultar el recuento de citas.</p>
+          <h3>4. Cuida tu inventario</h3>
+          <p>En Inventario agrega productos, corrige cantidades o da de baja los que ya no uses. Los que tienen 5 o menos se marcan en rojo.</p>
+        </li>
+        <li>
+          <h3>5. Revisa cómo vas</h3>
+          <p>En Más → Reportes ves cuántas citas tuviste en un periodo y de qué servicios.</p>
         </li>
       </ul>
     </section>
 
-    <section id="notas">
-      <h2>Notas</h2>
-      <h3>¿Puedo trabajar sin conexión?</h3>
-      <p>Sí. Puedes usar las funciones principales. Tus datos se guardan en el dispositivo.</p>
-      <h3>¿Qué significa "Horario ocupado"?</h3>
-      <p>La hora coincide con otra cita. Cambia el horario antes de guardar.</p>
+    <section id="preguntas-frecuentes">
+      <h2>Preguntas frecuentes</h2>
+      <p>Toca una pregunta para ver la respuesta.</p>
+
+      <h3>Citas</h3>
+
+      <details>
+        <summary>¿Por qué no aparece la hora que quiero?</summary>
+        <p>Las citas van en lapsos de media hora (por ejemplo 9:00 o 9:30). Se pueden iniciar de 8:00 a.m. a 8:30 p.m. y deben terminar a más tardar a las 9:00 p.m.</p>
+      </details>
+
+      <details>
+        <summary>¿Qué significa "Horario ocupado"?</summary>
+        <p>Ya hay otra cita que se encima con esa hora ese mismo día. Cambia la hora de inicio o de fin y vuelve a guardar.</p>
+      </details>
+
+      <details>
+        <summary>No me deja guardar la cita, ¿qué reviso?</summary>
+        <p>Revisa que elegiste un cliente, que la fecha no sea anterior a hoy, que la hora de fin sea después de la de inicio y que pusiste un servicio. El mensaje en rojo te dice qué falta.</p>
+      </details>
+
+      <details>
+        <summary>El servicio que hago no está en la lista</summary>
+        <p>Escríbelo en "Servicio personalizado" (hasta 60 caracteres). Ese es el que se guarda y el que aparece en los reportes.</p>
+      </details>
+
+      <details>
+        <summary>¿Cómo elijo varios productos para una cita?</summary>
+        <p>En la lista de Productos puedes marcar más de uno. Entre paréntesis ves cuántos tienes. Es opcional; si no usaste productos, déjala sin marcar.</p>
+      </details>
+
+      <details>
+        <summary>¿Cómo cambio o cancelo una cita?</summary>
+        <p>En Citas, busca la cita y toca Editar para cambiar datos u horario, o Eliminar para cancelarla. Antes de eliminar te pide confirmar.</p>
+      </details>
+
+      <h3>Clientes</h3>
+
+      <details>
+        <summary>¿Por qué me marca error el teléfono?</summary>
+        <p>Debe tener exactamente 10 números, sin espacios ni guiones. Si te faltan dígitos, el mensaje te dice cuántos.</p>
+      </details>
+
+      <details>
+        <summary>¿Cómo encuentro rápido a un cliente?</summary>
+        <p>En Clientes escribe parte de su nombre o de su teléfono en el buscador.</p>
+      </details>
+
+      <details>
+        <summary>¿Qué pasa si elimino a un cliente?</summary>
+        <p>Se borran también todas sus citas y su historia clínica, y no se pueden recuperar. Hazlo solo si estás segura.</p>
+      </details>
+
+      <details>
+        <summary>¿Puedo borrar algo de la historia clínica?</summary>
+        <p>No. En la historia clínica solo se pueden agregar observaciones y productos, para que el registro de cada cita quede completo.</p>
+      </details>
+
+      <h3>Inventario</h3>
+
+      <details>
+        <summary>¿Por qué no puedo dar de baja un producto?</summary>
+        <p>Porque está apartado en una cita que todavía no pasa. Cuando esa cita termine, ya lo podrás dar de baja.</p>
+      </details>
+
+      <details>
+        <summary>Si doy de baja un producto, ¿se borra de las citas pasadas?</summary>
+        <p>No. Deja de salir en el inventario y en la lista de nuevas citas, pero sigue apareciendo en la historia clínica de las citas donde se usó.</p>
+      </details>
+
+      <details>
+        <summary>¿Las existencias bajan solas al usar un producto?</summary>
+        <p>No. Cuando uses o compres productos, entra al producto en Inventario y corrige la cantidad.</p>
+      </details>
+
+      <details>
+        <summary>Me dice que ya existe un producto con ese nombre</summary>
+        <p>No puede haber dos productos activos con el mismo nombre, aunque cambien las mayúsculas. Usa un nombre más específico, por ejemplo "Crema hidratante 250 ml".</p>
+      </details>
+
+      <details>
+        <summary>¿Cómo busco un producto?</summary>
+        <p>En Inventario escribe parte del nombre en el buscador. No importan los acentos: "serum" encuentra "Sérum".</p>
+      </details>
+
+      <h3>Cuenta y app</h3>
+
+      <details>
+        <summary>¿Necesito internet para usar la app?</summary>
+        <p>Sí. Tus datos se guardan en línea para no perderlos aunque cambies de celular. Sin conexión no se pueden ver ni guardar citas.</p>
+      </details>
+
+      <details>
+        <summary>La app tarda en abrir, ¿está fallando?</summary>
+        <p>Si nadie la usó por un rato, la primera vez puede tardar hasta un minuto en despertar. Después funciona normal.</p>
+      </details>
+
+      <details>
+        <summary>¿Tengo que iniciar sesión cada vez?</summary>
+        <p>No. Tu sesión dura 30 días en el mismo dispositivo. Si usas un celular prestado, toca Cerrar sesión en Más al terminar.</p>
+      </details>
+
+      <details>
+        <summary>Olvidé mi contraseña</summary>
+        <p>Por seguridad la app no la puede mostrar. Pide al equipo de soporte que te asigne una nueva.</p>
+      </details>
+
+      <details>
+        <summary>¿Cómo cambio la hora a formato de 24 horas?</summary>
+        <p>En Más, en Formato de hora, elige 12 o 24 horas. Se guarda en ese dispositivo.</p>
+      </details>
     </section>
   </main>
 
