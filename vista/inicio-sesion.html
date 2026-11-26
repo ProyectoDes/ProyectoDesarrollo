@@ -19,7 +19,7 @@
     <h2>Inicio de sesión</h2>
     <p>Ingresa con tus credenciales de administradora.</p>
 
-    <form id="form-inicio-sesion" action="inicio.html" method="post">
+    <form id="form-inicio-sesion" action="inicio.html" method="post" novalidate>
       <div>
         <label for="usuario">Usuario</label>
         <input type="text" id="usuario" name="usuario" placeholder="celia.admin" autocomplete="username" required>
@@ -33,11 +33,12 @@
         <p class="error" id="error-contrasena" hidden></p>
       </div>
 
-      <p id="mensaje-formulario" role="alert" hidden></p>
+      <p id="mensaje-formulario" class="error" role="alert" hidden></p>
 
       <button type="submit" id="btn-ingresar">Ingresar</button>
     </form>
   </main>
 
+  <script src="js/inicio-sesion.js"></script>
 </body>
 </html>
