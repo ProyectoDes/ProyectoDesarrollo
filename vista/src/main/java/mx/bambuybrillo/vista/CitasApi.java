@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -141,7 +142,20 @@ public class CitasApi {
         cita.setHoraInicio(datos.getOrDefault("hora_inicio", "").trim());
         cita.setHoraFin(datos.getOrDefault("hora_fin", "").trim());
         cita.setServicio(servicio);
+        cita.setProductos(leerProductos(datos.getOrDefault("productos", "")));
         return cita;
+    }
+
+    // "3,7,12" -> [3, 7, 12]
+    private List<Integer> leerProductos(String texto) {
+        List<Integer> productos = new ArrayList<>();
+        for (String parte : texto.split(",")) {
+            int id = aEntero(parte);
+            if (id > 0) {
+                productos.add(id);
+            }
+        }
+        return productos;
     }
 
     private int leerIdDeRuta(String ruta, String mensajeError) {
