@@ -52,6 +52,12 @@ public class HistoriaRepositorioPostgres implements HistoriaRepositorio {
                     + "ON CONFLICT (id_cita, id_producto) DO NOTHING";
 
     public static final String SQL_EXISTE_CITA = "SELECT 1 FROM citas WHERE id_cita = ?";
+    public static final String SQL_CREAR_REGISTROS_PASADOS =
+            "INSERT INTO historia_clinica (id_cliente, fecha, id_cita) "
+                    + "SELECT id_cliente, fecha, id_cita FROM citas "
+                    + "WHERE id_cliente = ? "
+                    + "AND (fecha + hora_fin) <= (now() AT TIME ZONE 'America/Tijuana') "
+                    + "ON CONFLICT (id_cita) DO NOTHING";
 
     private final String url;
     private final String usuario;
@@ -65,6 +71,13 @@ public class HistoriaRepositorioPostgres implements HistoriaRepositorio {
 
     private Connection conectar() throws SQLException {
         return DriverManager.getConnection(url, usuario, clave);
+    }
+
+    private void crearRegistrosDeCitasPasadas(Connection conexion, int idCliente) throws SQLException {
+        try (PreparedStatement ps = conexion.prepareStatement(SQL_CREAR_REGISTROS_PASADOS)) {
+            ps.setInt(1, idCliente);
+            ps.executeUpdate();
+        }
     }
 
     private RegistroHistoria leerRegistro(ResultSet rs) throws SQLException {
@@ -100,6 +113,7 @@ public class HistoriaRepositorioPostgres implements HistoriaRepositorio {
     public List<RegistroHistoria> listarPorCliente(int idCliente) {
         Map<Integer, RegistroHistoria> porCita = new LinkedHashMap<>();
         try (Connection conexion = conectar()) {
+            crearRegistrosDeCitasPasadas(conexion, idCliente);
             try (PreparedStatement ps = conexion.prepareStatement(SQL_LISTAR_POR_CLIENTE)) {
                 ps.setInt(1, idCliente);
                 try (ResultSet rs = ps.executeQuery()) {
