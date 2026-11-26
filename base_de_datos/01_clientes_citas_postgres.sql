@@ -18,6 +18,14 @@ fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 fecha_modificacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Sesiones abiertas: se guarda solo el hash del token de la cookie, nunca el token
+CREATE TABLE IF NOT EXISTS sesiones (
+token_hash TEXT PRIMARY KEY,
+id_usuario INTEGER NOT NULL REFERENCES usuarios (id_usuario) ON DELETE CASCADE,
+expira TIMESTAMP NOT NULL,
+fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS citas (
 id_cita SERIAL PRIMARY KEY,
 id_cliente INTEGER NOT NULL REFERENCES clientes (id_cliente) ON DELETE NO ACTION,
