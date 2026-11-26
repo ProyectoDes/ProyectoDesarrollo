@@ -1420,3 +1420,33 @@ body:has([role="alertdialog"]) {
     color: #c62828;
     font-weight: 700;
 }
+
+/* Ayuda: preguntas frecuentes que se abren al tocarlas */
+#preguntas-frecuentes h3 {
+  margin: calc(var(--espacio) * 1.25) 0 8px;
+  color: var(--color-primario);
+  font-size: 1rem;
+}
+
+#preguntas-frecuentes details {
+  margin-bottom: 8px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+#preguntas-frecuentes summary {
+  padding: 12px 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#preguntas-frecuentes details[open] summary {
+  border-bottom: 1px solid var(--color-linea);
+}
+
+#preguntas-frecuentes details p {
+  margin: 0;
+  padding: 10px 14px 14px;
+  color: var(--color-texto-suave);
+}
