@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inventario - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 14 · Inventario -->
+
+  <header>
+    <h1>Inventario</h1>
+  </header>
+
+  <main>
+    <p id="mensaje-inventario" role="status" hidden></p>
+
+    <form id="form-buscar" role="search">
+      <label for="buscar">Buscar producto</label>
+      <input type="search" id="buscar" name="buscar" placeholder="Buscar producto">
+    </form>
+
+    <section id="productos">
+      <div class="encabezado-seccion">
+        <h2>Productos</h2>
+        <p id="total-productos"></p>
+      </div>
+
+      <ul id="lista-productos">
+        <li class="vacio">Cargando productos...</li>
+      </ul>
+
+      <p class="nota">Toca un producto para modificarlo o darlo de baja.</p>
+    </section>
+
+    <a href="agregar-producto.html" id="btn-agregar">Agregar producto</a>
+  </main>
+
+  <nav id="menu-inferior">
+    <ul>
+      <li><a href="inicio.html">Inicio</a></li>
+      <li><a href="citas.html">Citas</a></li>
+      <li><a href="clientes.html">Clientes</a></li>
+      <li><a href="inventario.html" aria-current="page">Inventario</a></li>
+      <li><a href="mas.html">Más</a></li>
+    </ul>
+  </nav>
+
+  <script src="js/inventario.js"></script>
+</body>
+</html>

@@ -1,12 +1,6 @@
 package mx.bambuybrillo.negocio;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import mx.bambuybrillo.entidad.Producto;
-import mx.bambuybrillo.persistencia.ProductoRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -14,154 +8,90 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class RegistrarProductoTest {
 
-    // Repositorio falso: guarda en una lista para no usar la base de datos
-    static class RepositorioFalso implements ProductoRepositorio {
-        final List<Producto> guardados = new ArrayList<>();
-        boolean nombreExiste = false;
-
-        @Override
-        public void guardar(Producto producto) {
-            guardados.add(producto);
-        }
-
-        @Override
-        public List<Producto> listar() {
-            return new ArrayList<>(guardados);
-        }
-
-        @Override
-        public Optional<Producto> buscarPorId(int idProducto) {
-            return Optional.empty();
-        }
-
-        @Override
-        public boolean actualizar(Producto producto) {
-            return false;
-        }
-
-        @Override
-        public boolean eliminar(int idProducto) {
-            return false;
-        }
-
-        @Override
-        public boolean estaLigadoACita(int idProducto) {
-            return false;
-        }
-
-        @Override
-        public boolean existeNombre(String nombre) {
-            return nombreExiste;
-        }
-    }
-
-    private RepositorioFalso repositorio;
+    // Usa el mismo repositorio falso de ModificarProductoTest
+    private ModificarProductoTest.RepositorioFalso repositorio;
     private RegistrarProducto registrar;
 
     @BeforeEach
     void preparar() {
-        repositorio = new RepositorioFalso();
+        repositorio = new ModificarProductoTest.RepositorioFalso();
         registrar = new RegistrarProducto(repositorio);
     }
 
-    private Producto productoValido() {
-        return new Producto(0, "Gel limpiador de aloe", "Limpiador facial suave",
-                10, new BigDecimal("149.90"));
-    }
-
-    private void verificarRechazo(Producto producto, String mensaje) {
-        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
-                () -> registrar.registrar(producto));
+    private void verificarRechazo(String nombre, String cantidad, String campo, String mensaje) {
+        ValidacionException e = assertThrows(ValidacionException.class,
+                () -> registrar.registrar(nombre, "", cantidad));
+        assertEquals(campo, e.getCampo());
         assertEquals(mensaje, e.getMessage());
-        assertEquals(0, repositorio.guardados.size());
+        assertEquals(0, repositorio.listar().size());
     }
-
-    // ---------- Datos válidos: se guarda ----------
 
     @Test
     void productoValidoSeGuarda() {
-        assertEquals("Producto registrado correctamente.", registrar.registrar(productoValido()));
-        assertEquals(1, repositorio.guardados.size());
+        assertEquals("Producto registrado correctamente.",
+                registrar.registrar("Gel limpiador de aloe", "Limpiador facial suave", "10"));
+        assertEquals(1, repositorio.listar().size());
+        assertEquals(10, repositorio.listar().get(0).getCantidad());
     }
 
     @Test
-    void nombreSeGuardaSinEspaciosSobrantes() {
-        Producto producto = productoValido();
-        producto.setNombre("   Sérum hialurónico   ");
-        registrar.registrar(producto);
-        assertEquals("Sérum hialurónico", repositorio.guardados.get(0).getNombre());
+    void nombreYDescripcionSeGuardanSinEspaciosSobrantes() {
+        registrar.registrar("   Sérum hialurónico   ", "   ", " 3 ");
+        Producto guardado = repositorio.listar().get(0);
+        assertEquals("Sérum hialurónico", guardado.getNombre());
+        assertNull(guardado.getDescripcion());
+        assertEquals(3, guardado.getCantidad());
     }
 
     @Test
-    void descripcionVaciaSeGuardaComoNula() {
-        Producto producto = productoValido();
-        producto.setDescripcion("   ");
-        registrar.registrar(producto);
-        assertNull(repositorio.guardados.get(0).getDescripcion());
+    void cantidadCeroEsValida() {
+        registrar.registrar("Toallas", null, "0");
+        assertEquals(1, repositorio.listar().size());
     }
 
     @Test
-    void descripcionNulaEsValida() {
-        Producto producto = productoValido();
-        producto.setDescripcion(null);
-        registrar.registrar(producto);
-        assertEquals(1, repositorio.guardados.size());
+    void nombreVacioSeRechaza() {
+        verificarRechazo("   ", "5", "nombre", "El nombre del producto es obligatorio.");
     }
 
     @Test
-    void cantidadCeroYPrecioCeroSonValidos() {
-        Producto producto = productoValido();
-        producto.setCantidad(0);
-        producto.setPrecio(BigDecimal.ZERO);
-        registrar.registrar(producto);
-        assertEquals(1, repositorio.guardados.size());
-    }
-
-    // ---------- Datos inválidos: se rechaza y no se guarda ----------
-
-    @Test
-    void productoNuloSeRechaza() {
-        verificarRechazo(null, "El nombre del producto es obligatorio.");
+    void nombreMuyLargoSeRechaza() {
+        verificarRechazo("a".repeat(61), "5", "nombre", "El nombre no puede tener más de 60 caracteres.");
     }
 
     @Test
-    void nombreNuloSeRechaza() {
-        Producto producto = productoValido();
-        producto.setNombre(null);
-        verificarRechazo(producto, "El nombre del producto es obligatorio.");
+    void cantidadVaciaSeRechaza() {
+        verificarRechazo("Toallas", "", "cantidad", "La cantidad es obligatoria.");
     }
 
     @Test
-    void nombreSoloEspaciosSeRechaza() {
-        Producto producto = productoValido();
-        producto.setNombre("   ");
-        verificarRechazo(producto, "El nombre del producto es obligatorio.");
+    void cantidadConLetrasSeRechaza() {
+        verificarRechazo("Toallas", "diez", "cantidad", "La cantidad debe ser un número entero.");
     }
 
     @Test
     void cantidadNegativaSeRechaza() {
-        Producto producto = productoValido();
-        producto.setCantidad(-1);
-        verificarRechazo(producto, "La cantidad no puede ser negativa.");
+        verificarRechazo("Toallas", "-1", "cantidad", "La cantidad no puede ser negativa.");
     }
 
     @Test
-    void precioNuloSeRechaza() {
-        Producto producto = productoValido();
-        producto.setPrecio(null);
-        verificarRechazo(producto, "El precio debe ser un número mayor o igual a cero.");
+    void nombreDuplicadoSeRechazaSinImportarMayusculas() {
+        registrar.registrar("Toallas", null, "5");
+        ValidacionException e = assertThrows(ValidacionException.class,
+                () -> registrar.registrar("TOALLAS", null, "2"));
+        assertEquals("nombre", e.getCampo());
+        assertEquals("Ya existe un producto con ese nombre.", e.getMessage());
+        assertEquals(1, repositorio.listar().size());
     }
 
     @Test
-    void precioNegativoSeRechaza() {
-        Producto producto = productoValido();
-        producto.setPrecio(new BigDecimal("-0.01"));
-        verificarRechazo(producto, "El precio debe ser un número mayor o igual a cero.");
+    void descripcionNulaEsValida() {
+        registrar.registrar("Gel limpiador de aloe", null, "10");
+        assertNull(repositorio.listar().get(0).getDescripcion());
     }
 
     @Test
-    void nombreDuplicadoSeRechaza() {
-        repositorio.nombreExiste = true;
-        verificarRechazo(productoValido(), "Ya existe un producto con ese nombre.");
+    void nombreNuloSeRechaza() {
+        verificarRechazo(null, "5", "nombre", "El nombre del producto es obligatorio.");
     }
 }

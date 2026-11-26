@@ -1,13 +1,14 @@
 package mx.bambuybrillo.negocio;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import mx.bambuybrillo.entidad.Producto;
-import mx.bambuybrillo.persistencia.ProductoRepositorio;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -15,44 +16,31 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BajaProductoTest {
 
-    // Repositorio falso: guarda los productos en una lista
-    static class RepositorioFalso implements ProductoRepositorio {
-        final List<Producto> productos = new ArrayList<>();
-        final Set<Integer> ligadosACita = new HashSet<>();
+    private static final ZoneId ZONA = ZoneId.of("America/Tijuana");
+    // "Ahora" fijo para las pruebas: 25 de noviembre de 2026 a las 15:00
+    private static final LocalDateTime AHORA = LocalDateTime.of(2026, 11, 25, 15, 0);
 
-        @Override
-        public void guardar(Producto producto) {
-            productos.add(producto);
-        }
+    // Cita en la que se usó un producto
+    record CitaUsada(int idProducto, LocalDate fecha, LocalTime horaFin) { }
 
-        @Override
-        public List<Producto> listar() {
-            return new ArrayList<>(productos);
-        }
-
-        @Override
-        public Optional<Producto> buscarPorId(int idProducto) {
-            return productos.stream().filter(p -> p.getIdProducto() == idProducto).findFirst();
-        }
-
-        @Override
-        public boolean actualizar(Producto producto) {
-            return false;
-        }
+    // Usa el mismo repositorio falso de ModificarProductoTest y agrega las citas
+    static class RepositorioFalso extends ModificarProductoTest.RepositorioFalso {
+        final List<CitaUsada> citas = new ArrayList<>();
+        final List<Integer> dadosDeBaja = new ArrayList<>();
 
         @Override
         public boolean eliminar(int idProducto) {
-            return productos.removeIf(p -> p.getIdProducto() == idProducto);
+            boolean quitado = productos.removeIf(p -> p.getIdProducto() == idProducto);
+            if (quitado) {
+                dadosDeBaja.add(idProducto);
+            }
+            return quitado;
         }
 
         @Override
-        public boolean estaLigadoACita(int idProducto) {
-            return ligadosACita.contains(idProducto);
-        }
-
-        @Override
-        public boolean existeNombre(String nombre) {
-            return false;
+        public boolean estaEnCitaPendiente(int idProducto, LocalDate hoy, LocalTime ahora) {
+            return citas.stream().anyMatch(c -> c.idProducto() == idProducto
+                    && (c.fecha().isAfter(hoy) || (c.fecha().equals(hoy) && c.horaFin().isAfter(ahora))));
         }
     }
 
@@ -62,17 +50,9 @@ class BajaProductoTest {
     @BeforeEach
     void preparar() {
         repositorio = new RepositorioFalso();
-        baja = new BajaProducto(repositorio);
-        agregar(1, "Gel limpiador de aloe");
-        agregar(2, "Sérum hialurónico");
-    }
-
-    private void agregar(int id, String nombre) {
-        Producto producto = new Producto();
-        producto.setIdProducto(id);
-        producto.setNombre(nombre);
-        producto.setCantidad(10);
-        repositorio.productos.add(producto);
+        repositorio.productos.add(new Producto(1, "Toallas", null, 10));
+        repositorio.productos.add(new Producto(2, "Sérum hialurónico", null, 10));
+        baja = new BajaProducto(repositorio, Clock.fixed(AHORA.atZone(ZONA).toInstant(), ZONA));
     }
 
     private void verificarRechazo(int id, String mensaje) {
@@ -83,13 +63,34 @@ class BajaProductoTest {
     }
 
     @Test
-    void productoSinCitasSeEliminaYDesapareceDelListado() {
+    void productoSinCitasSeDaDeBaja() {
         assertEquals("Producto eliminado correctamente.", baja.eliminar(1));
+        assertEquals(1, repositorio.listar().size());
+        assertEquals(List.of(1), repositorio.dadosDeBaja);
+    }
 
-        List<Producto> restantes = repositorio.listar();
-        assertEquals(1, restantes.size());
-        assertEquals(2, restantes.get(0).getIdProducto());
-        assertTrue(repositorio.buscarPorId(1).isEmpty());
+    @Test
+    void productoUsadoEnCitaDeHaceTresDiasSeDaDeBaja() {
+        repositorio.citas.add(new CitaUsada(1, AHORA.toLocalDate().minusDays(3), LocalTime.of(11, 0)));
+        assertEquals("Producto eliminado correctamente.", baja.eliminar(1));
+    }
+
+    @Test
+    void productoUsadoEnCitaDeHoyQueYaTerminoSeDaDeBaja() {
+        repositorio.citas.add(new CitaUsada(1, AHORA.toLocalDate(), LocalTime.of(14, 30)));
+        assertEquals("Producto eliminado correctamente.", baja.eliminar(1));
+    }
+
+    @Test
+    void productoEnCitaDeHoyQueNoHaTerminadoNoSeDaDeBaja() {
+        repositorio.citas.add(new CitaUsada(1, AHORA.toLocalDate(), LocalTime.of(16, 0)));
+        verificarRechazo(1, BajaProducto.MENSAJE_CITA_PENDIENTE);
+    }
+
+    @Test
+    void productoEnCitaFuturaNoSeDaDeBaja() {
+        repositorio.citas.add(new CitaUsada(1, AHORA.toLocalDate().plusDays(2), LocalTime.of(10, 0)));
+        verificarRechazo(1, BajaProducto.MENSAJE_CITA_PENDIENTE);
     }
 
     @Test
@@ -98,19 +99,19 @@ class BajaProductoTest {
     }
 
     @Test
-    void idNegativoSeRechaza() {
-        verificarRechazo(-5, "El producto a eliminar no existe.");
-    }
-
-    @Test
     void productoInexistenteSeRechaza() {
         verificarRechazo(99, "El producto a eliminar no existe.");
     }
 
     @Test
-    void productoLigadoACitaNoSeElimina() {
-        repositorio.ligadosACita.add(1);
-        verificarRechazo(1, "No se puede eliminar el producto porque está ligado a una cita.");
-        assertTrue(repositorio.buscarPorId(1).isPresent());
+    void idNegativoSeRechaza() {
+        verificarRechazo(-5, "El producto a eliminar no existe.");
+    }
+
+    @Test
+    void productoDadoDeBajaYaNoSeEncuentra() {
+        baja.eliminar(1);
+        assertTrue(repositorio.buscarPorId(1).isEmpty());
+        assertTrue(repositorio.buscarPorId(2).isPresent());
     }
 }

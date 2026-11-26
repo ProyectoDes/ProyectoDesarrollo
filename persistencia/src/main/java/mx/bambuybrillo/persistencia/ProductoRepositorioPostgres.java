@@ -5,6 +5,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Date;
+import java.sql.Time;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,27 +18,33 @@ import mx.bambuybrillo.entidad.Producto;
 public class ProductoRepositorioPostgres implements ProductoRepositorio {
 
     public static final String SQL_GUARDAR =
-            "INSERT INTO productos (nombre, descripcion, cantidad, precio) VALUES (?, ?, ?, ?)";
+            "INSERT INTO productos (nombre, descripcion, cantidad) VALUES (?, ?, ?)";
+
+    // Solo cuenta productos activos: un nombre dado de baja se puede volver a usar
+    public static final String SQL_EXISTE_NOMBRE =
+            "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND activo";
 
     public static final String SQL_LISTAR =
-            "SELECT id_producto, nombre, descripcion, cantidad, precio "
-                    + "FROM productos ORDER BY nombre";
+            "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE activo ORDER BY nombre";
 
     public static final String SQL_BUSCAR_POR_ID =
-            "SELECT id_producto, nombre, descripcion, cantidad, precio "
-                    + "FROM productos WHERE id_producto = ?";
+            "SELECT id_producto, nombre, descripcion, cantidad FROM productos WHERE id_producto = ? AND activo";
 
+    // fecha_modificacion la actualiza el trigger trg_productos_modificacion
     public static final String SQL_ACTUALIZAR =
-            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ?, precio = ? "
-                    + "WHERE id_producto = ?";
+            "UPDATE productos SET nombre = ?, descripcion = ?, cantidad = ? WHERE id_producto = ? AND activo";
 
-    public static final String SQL_ELIMINAR = "DELETE FROM productos WHERE id_producto = ?";
+    public static final String SQL_NOMBRE_EN_OTRO =
+            "SELECT 1 FROM productos WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id_producto <> ? AND activo";
 
-    public static final String SQL_LIGADO_A_CITA =
-            "SELECT COUNT(*) FROM cita_producto WHERE id_producto = ?";
+    // Baja lógica: no se borra la fila para que la historia clínica siga mostrando el producto
+    public static final String SQL_ELIMINAR =
+            "UPDATE productos SET activo = FALSE WHERE id_producto = ? AND activo";
 
-    public static final String SQL_EXISTE_NOMBRE =
-            "SELECT COUNT(*) FROM productos WHERE LOWER(nombre) = LOWER(?)";
+    // Citas que todavía no pasan: de un día posterior, o de hoy que aún no terminan
+    public static final String SQL_EN_CITA_PENDIENTE =
+            "SELECT 1 FROM cita_producto cp JOIN citas c ON c.id_cita = cp.id_cita "
+          + "WHERE cp.id_producto = ? AND (c.fecha > ? OR (c.fecha = ? AND c.hora_fin > ?)) LIMIT 1";
 
     private final String url;
     private final String usuario;
@@ -50,15 +60,6 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
         return DriverManager.getConnection(url, usuario, clave);
     }
 
-    private static Producto leerProducto(ResultSet rs) throws SQLException {
-        return new Producto(
-                rs.getInt("id_producto"),
-                rs.getString("nombre"),
-                rs.getString("descripcion"),
-                rs.getInt("cantidad"),
-                rs.getBigDecimal("precio"));
-    }
-
     @Override
     public void guardar(Producto producto) {
         try (Connection conexion = conectar();
@@ -66,7 +67,6 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getDescripcion());
             ps.setInt(3, producto.getCantidad());
-            ps.setBigDecimal(4, producto.getPrecio());
             ps.executeUpdate();
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo guardar el producto.", e);
@@ -80,10 +80,14 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
              PreparedStatement ps = conexion.prepareStatement(SQL_LISTAR);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                productos.add(leerProducto(rs));
+                productos.add(new Producto(
+                        rs.getInt("id_producto"),
+                        rs.getString("nombre"),
+                        rs.getString("descripcion"),
+                        rs.getInt("cantidad")));
             }
         } catch (SQLException e) {
-            throw new IllegalStateException("No se pudieron consultar los productos.", e);
+            throw new IllegalStateException("No se pudo consultar el inventario.", e);
         }
         return productos;
     }
@@ -95,7 +99,11 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setInt(1, idProducto);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(leerProducto(rs));
+                    return Optional.of(new Producto(
+                            rs.getInt("id_producto"),
+                            rs.getString("nombre"),
+                            rs.getString("descripcion"),
+                            rs.getInt("cantidad")));
                 }
                 return Optional.empty();
             }
@@ -111,11 +119,37 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setString(1, producto.getNombre());
             ps.setString(2, producto.getDescripcion());
             ps.setInt(3, producto.getCantidad());
-            ps.setBigDecimal(4, producto.getPrecio());
-            ps.setInt(5, producto.getIdProducto());
+            ps.setInt(4, producto.getIdProducto());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new IllegalStateException("No se pudo actualizar el producto.", e);
+        }
+    }
+
+    @Override
+    public boolean existeNombre(String nombre) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_EXISTE_NOMBRE)) {
+            ps.setString(1, nombre);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo revisar el nombre del producto.", e);
+        }
+    }
+
+    @Override
+    public boolean existeNombreEnOtroProducto(String nombre, int idProducto) {
+        try (Connection conexion = conectar();
+             PreparedStatement ps = conexion.prepareStatement(SQL_NOMBRE_EN_OTRO)) {
+            ps.setString(1, nombre);
+            ps.setInt(2, idProducto);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException("No se pudo revisar el nombre del producto.", e);
         }
     }
 
@@ -126,35 +160,24 @@ public class ProductoRepositorioPostgres implements ProductoRepositorio {
             ps.setInt(1, idProducto);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            throw new IllegalStateException("No se pudo eliminar el producto.", e);
+            throw new IllegalStateException("No se pudo dar de baja el producto.", e);
         }
     }
 
     @Override
-    public boolean estaLigadoACita(int idProducto) {
+    public boolean estaEnCitaPendiente(int idProducto, LocalDate hoy, LocalTime ahora) {
         try (Connection conexion = conectar();
-             PreparedStatement ps = conexion.prepareStatement(SQL_LIGADO_A_CITA)) {
+             PreparedStatement ps = conexion.prepareStatement(SQL_EN_CITA_PENDIENTE)) {
             ps.setInt(1, idProducto);
+            ps.setDate(2, Date.valueOf(hoy));
+            ps.setDate(3, Date.valueOf(hoy));
+            ps.setTime(4, Time.valueOf(ahora.withNano(0)));
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
+                return rs.next();
             }
         } catch (SQLException e) {
             throw new IllegalStateException(
-                    "No se pudo consultar si el producto está ligado a una cita.", e);
-        }
-    }
-
-    @Override
-    public boolean existeNombre(String nombre) {
-        try (Connection conexion = conectar();
-             PreparedStatement ps = conexion.prepareStatement(SQL_EXISTE_NOMBRE)) {
-            ps.setString(1, nombre);
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() && rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            throw new IllegalStateException(
-                    "No se pudo consultar si el nombre del producto ya existe.", e);
+                    "No se pudo consultar las citas del producto.", e);
         }
     }
 }

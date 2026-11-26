@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil del cliente - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 11 · Perfil del cliente -->
+
+  <header>
+    <a href="clientes.html" aria-label="Regresar a clientes">Regresar</a>
+    <h1>Perfil del cliente</h1>
+  </header>
+
+  <main>
+    <section id="datos-cliente" class="tarjeta">
+      <div class="identificacion">
+        <span class="iniciales" id="iniciales-cliente" aria-hidden="true"></span>
+        <h2 id="nombre-cliente">Cargando...</h2>
+      </div>
+      <p id="telefono-cliente"></p>
+      <p class="detalle" id="edad-cliente"></p>
+      <a href="editar-cliente.html" id="btn-editar-perfil">Editar perfil</a>
+    </section>
+
+    <a href="historia-clinica.html" id="btn-historia-clinica" class="tarjeta">
+      <span class="icono-historia" aria-hidden="true"></span>
+      <strong>Historia clínica</strong>
+      <span>Tratamientos y observaciones</span>
+    </a>
+
+    <section id="citas-cliente">
+      <div class="encabezado-seccion">
+        <h2>Sus citas</h2>
+        <p id="nota-citas"></p>
+      </div>
+
+      <ul id="lista-citas-cliente" class="lista-tarjetas"></ul>
+    </section>
+
+    <a href="confirmar-baja-cliente.html" id="btn-baja-cliente" hidden>Dar de baja cliente</a>
+  </main>
+
+  <script src="js/formato-hora.js"></script>
+  <script src="js/perfil-cliente.js"></script>
+</body>
+</html>
