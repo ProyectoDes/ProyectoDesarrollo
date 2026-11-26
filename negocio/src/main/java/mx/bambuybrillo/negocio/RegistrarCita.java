@@ -4,6 +4,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import mx.bambuybrillo.entidad.Cita;
 import mx.bambuybrillo.persistencia.CitaRepositorio;
@@ -21,6 +24,7 @@ public class RegistrarCita {
 
     public String registrar(Cita cita) {
         validar(cita);
+        cita.setProductos(limpiarProductos(cita.getProductos()));
         repositorio.guardar(cita);
         return "Cita registrada correctamente.";
     }
@@ -79,6 +83,13 @@ public class RegistrarCita {
         } catch (DateTimeParseException e) {
             throw new ValidacionException(campo, descripcion + " no es válida.");
         }
+    }
+
+    // Quita repetidos y id inválidos de los productos elegidos
+    private List<Integer> limpiarProductos(List<Integer> productos) {
+        List<Integer> limpios = new ArrayList<>(new LinkedHashSet<>(productos));
+        limpios.removeIf(id -> id == null || id <= 0);
+        return limpios;
     }
 
     private boolean esMediaHora(LocalTime hora) {
