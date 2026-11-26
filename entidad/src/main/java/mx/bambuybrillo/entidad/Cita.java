@@ -1,5 +1,8 @@
 package mx.bambuybrillo.entidad;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cita {
     private int idCita;
     private int idCliente;
@@ -7,6 +10,8 @@ public class Cita {
     private String horaInicio;
     private String horaFin;
     private String servicio;
+    // Productos del inventario que se usarán en la cita (sus id)
+    private List<Integer> productos = new ArrayList<>();
 
     public Cita() {
     }
@@ -44,4 +49,10 @@ public class Cita {
     public String getServicio() { return servicio; }
 
     public void setServicio(String servicio) { this.servicio = servicio; }
+
+    public List<Integer> getProductos() { return productos; }
+
+    public void setProductos(List<Integer> productos) {
+        this.productos = productos == null ? new ArrayList<>() : productos;
+    }
 }
