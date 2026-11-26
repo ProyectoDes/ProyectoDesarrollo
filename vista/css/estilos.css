@@ -1409,3 +1409,14 @@ body:has([role="alertdialog"]) {
   color: var(--color-primario);
   font-size: 0.875rem;
 }
+
+/* Productos con stock bajo */
+#lista-productos li.stock-bajo a {
+    border-left: 4px solid #c62828;
+    background: #fdecea;
+}
+
+#lista-productos .existencias .aviso-stock {
+    color: #c62828;
+    font-weight: 700;
+}

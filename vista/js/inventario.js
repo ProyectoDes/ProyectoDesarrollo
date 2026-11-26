@@ -4,6 +4,7 @@
   var total = document.getElementById('total-productos');
   var lista = document.getElementById('lista-productos');
   var todos = [];
+    var STOCK_BAJO = 5;
 
   // Al regresar de editar o dar de baja un producto se confirma el cambio
   var aviso = document.getElementById('mensaje-inventario');
@@ -50,6 +51,11 @@
     existencias.appendChild(crearElemento('strong', String(producto.cantidad)));
     existencias.appendChild(crearElemento('span', producto.cantidad === 1 ? 'unidad' : 'unidades'));
     enlace.appendChild(existencias);
+
+      if (producto.cantidad <= STOCK_BAJO) {
+          item.className = 'stock-bajo';
+          existencias.appendChild(crearElemento('span', 'Stock bajo', 'aviso-stock'));
+      }
 
     item.appendChild(enlace);
     return item;
