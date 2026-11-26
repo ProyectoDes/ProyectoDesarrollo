@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Observaciones y productos - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 13 · Añadir observaciones y productos -->
+
+  <header>
+    <a href="clientes.html" id="btn-regresar" aria-label="Regresar a historia clínica">&larr;</a>
+    <h1>Observaciones y productos</h1>
+    <p id="subtitulo">Historia clínica</p>
+  </header>
+
+  <main>
+    <section id="cita-origen" class="tarjeta-dato">
+      <h2>Cita de origen</h2>
+      <p id="origen-cliente">Cargando...</p>
+      <p id="origen-detalle"></p>
+    </section>
+
+    <section id="datos-registrados" class="tarjeta-dato">
+      <h2>Productos registrados</h2>
+      <p id="productos-registrados"></p>
+      <h2>Observaciones registradas</h2>
+      <p id="observaciones-registradas" class="observaciones"></p>
+    </section>
+
+    <form id="form-observaciones">
+      <h2>Añadir nuevos datos</h2>
+
+      <fieldset id="campo-productos">
+        <legend>Productos usados</legend>
+        <ul id="lista-productos-check">
+          <li class="sin-datos">Cargando productos...</li>
+        </ul>
+      </fieldset>
+
+      <div>
+        <label for="observaciones">Nuevas observaciones</label>
+        <textarea id="observaciones" name="observaciones" rows="4" maxlength="1000" placeholder="Añade observaciones adicionales..."></textarea>
+      </div>
+
+      <p>Aquí solo puedes añadir productos y observaciones.</p>
+
+      <p class="error" id="mensaje-formulario" role="alert" hidden></p>
+
+      <button type="submit" id="btn-guardar">Guardar cambios</button>
+    </form>
+  </main>
+
+  <script src="js/observaciones.js"></script>
+</body>
+</html>

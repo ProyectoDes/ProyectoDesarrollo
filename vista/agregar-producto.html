@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agregar producto - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 15 · Alta de producto -->
+
+  <header>
+    <a href="inventario.html" aria-label="Regresar al inventario">&larr;</a>
+    <h1>Agregar producto</h1>
+  </header>
+
+  <main>
+    <p>Registra un producto y su cantidad disponible.</p>
+
+    <form id="form-agregar-producto" action="inventario.html" method="get">
+      <div>
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Crema hidratante" maxlength="60" required>
+        <p class="error" id="error-nombre" hidden></p>
+      </div>
+
+      <div>
+        <label for="descripcion">Descripción</label>
+        <input type="text" id="descripcion" name="descripcion" maxlength="120" placeholder="Opcional">
+        <p class="error" id="error-descripcion" hidden></p>
+      </div>
+
+      <div>
+        <label for="cantidad">Cantidad disponible</label>
+        <input type="number" id="cantidad" name="cantidad" placeholder="6" min="0" step="1" required>
+        <small>Cantidad en unidades. Usa un número entero.</small>
+        <p class="error" id="error-cantidad" hidden></p>
+      </div>
+
+      <p id="mensaje-formulario" role="status" hidden></p>
+
+      <button type="submit" id="btn-guardar">Guardar</button>
+    </form>
+  </main>
+
+  <script src="js/agregar-producto.js"></script>
+</body>
+</html>

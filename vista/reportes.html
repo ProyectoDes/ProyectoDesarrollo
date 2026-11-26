@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reportes - Bambú y Brillo</title>
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+  <!-- Pantalla 18 · Reportes -->
+
+  <header>
+    <a href="mas.html" aria-label="Regresar a Más">&larr;</a>
+    <h1>Reportes</h1>
+    <p>Citas por periodo</p>
+  </header>
+
+  <main>
+    <form id="form-periodo" action="reportes.html" method="get">
+      <div>
+        <label for="desde">Desde</label>
+        <input type="date" id="desde" name="desde" value="2026-11-02" required>
+      </div>
+      <div>
+        <label for="hasta">Hasta</label>
+        <input type="date" id="hasta" name="hasta" value="2026-11-02" required>
+      </div>
+    </form>
+
+    <section id="resumen">
+      <h2>3 citas</h2>
+      <p>2 de noviembre de 2026</p>
+    </section>
+
+    <section id="desglose">
+      <h2>Desglose por servicio</h2>
+      <table>
+        <tbody>
+          <tr><th scope="row">Limpieza facial</th><td>1</td></tr>
+          <tr><th scope="row">Manicure</th><td>1</td></tr>
+          <tr><th scope="row">Depilación</th><td>0</td></tr>
+          <tr><th scope="row">Masaje relajante</th><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>Incluye todas las citas registradas en el rango seleccionado.</p>
+    </section>
+  </main>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 package mx.bambuybrillo.entidad;
 
+// Producto del inventario de la clínica (no se vende, por eso no lleva precio)
 public class Producto {
-
     private int idProducto;
     private String nombre;
     private String descripcion;
