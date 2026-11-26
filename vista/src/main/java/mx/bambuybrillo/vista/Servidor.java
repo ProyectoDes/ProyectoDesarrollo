@@ -28,6 +28,10 @@ import mx.bambuybrillo.negocio.ModificarProducto;
 import mx.bambuybrillo.negocio.RegistrarProducto;
 import mx.bambuybrillo.persistencia.HistoriaRepositorioPostgres;
 import mx.bambuybrillo.persistencia.ProductoRepositorioPostgres;
+import mx.bambuybrillo.negocio.IniciarSesion;
+import mx.bambuybrillo.negocio.ValidarSesion;
+import mx.bambuybrillo.persistencia.SesionRepositorioPostgres;
+import mx.bambuybrillo.persistencia.UsuarioRepositorioPostgres;
 
 public class Servidor {
 
@@ -46,7 +50,15 @@ public class Servidor {
                 new EliminarCita(repositorio),
                 new ModificarCita(repositorio));
 
-        HttpServer servidor = HttpServer.create(new InetSocketAddress(PUERTO), 0);
+        // Todas las rutas pasan por el filtro: sin sesión no se puede usar el sistema
+        SesionRepositorioPostgres repositorioSesiones = new SesionRepositorioPostgres(url, usuario, clave);
+        ValidarSesion validarSesion = new ValidarSesion(repositorioSesiones);
+        HttpServer servidor = new ServidorConSesion(
+                HttpServer.create(new InetSocketAddress(PUERTO), 0), new FiltroSesion(validarSesion));
+
+        new SesionApi(
+                new IniciarSesion(new UsuarioRepositorioPostgres(url, usuario, clave), repositorioSesiones),
+                validarSesion).registrarRutas(servidor);
         api.registrarRutas(servidor);
 
         ClienteRepositorioPostgres repositorioClientes =
