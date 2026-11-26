@@ -50,6 +50,7 @@
           var opcion = document.createElement('option');
           opcion.value = producto.id;
           opcion.textContent = producto.nombre + ' (' + producto.cantidad + ')';
+          opcion.disabled = producto.cantidad <= 0;
           selectProductos.appendChild(opcion);
         });
         if (productos.length === 0) {

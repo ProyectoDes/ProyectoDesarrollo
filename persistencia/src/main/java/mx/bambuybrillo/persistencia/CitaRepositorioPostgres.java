@@ -90,13 +90,14 @@ public class CitaRepositorioPostgres implements CitaRepositorio {
                     for (int idProducto : cita.getProductos()) {
                         ps.setInt(1, idCita);
                         ps.setInt(2, idProducto);
-                        ps.addBatch();
+                        if (ps.executeUpdate() > 0) {
+                            StockProductos.descontarUnidad(conexion, idProducto);
+                        }
                     }
-                    ps.executeBatch();
                 }
                 conexion.commit();
                 cita.setIdCita(idCita);
-            } catch (SQLException e) {
+            } catch (SQLException | RuntimeException e) {
                 conexion.rollback();
                 throw e;
             }

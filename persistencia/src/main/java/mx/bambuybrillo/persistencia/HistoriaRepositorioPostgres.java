@@ -47,8 +47,9 @@ public class HistoriaRepositorioPostgres implements HistoriaRepositorio {
           + "ELSE historia_clinica.observaciones || E'\\n' || EXCLUDED.observaciones END";
 
     public static final String SQL_AGREGAR_PRODUCTO =
-            "INSERT INTO cita_producto (id_cita, id_producto, cantidad_usada) VALUES (?, ?, 1) "
-          + "ON CONFLICT (id_cita, id_producto) DO NOTHING";
+            "INSERT INTO cita_producto (id_cita, id_producto, cantidad_usada) "
+                    + "SELECT ?, id_producto, 1 FROM productos WHERE id_producto = ? AND activo "
+                    + "ON CONFLICT (id_cita, id_producto) DO NOTHING";
 
     public static final String SQL_EXISTE_CITA = "SELECT 1 FROM citas WHERE id_cita = ?";
 
@@ -167,9 +168,10 @@ public class HistoriaRepositorioPostgres implements HistoriaRepositorio {
                         for (Integer idProducto : idsProductos) {
                             ps.setInt(1, idCita);
                             ps.setInt(2, idProducto);
-                            ps.addBatch();
+                            if (ps.executeUpdate() > 0) {
+                                StockProductos.descontarUnidad(conexion, idProducto);
+                            }
                         }
-                        ps.executeBatch();
                     }
                 }
                 conexion.commit();
