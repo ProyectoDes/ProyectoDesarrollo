@@ -83,4 +83,15 @@ class RegistrarProductoTest {
         assertEquals("Ya existe un producto con ese nombre.", e.getMessage());
         assertEquals(1, repositorio.listar().size());
     }
+
+    @Test
+    void descripcionNulaEsValida() {
+        registrar.registrar("Gel limpiador de aloe", null, "10");
+        assertNull(repositorio.listar().get(0).getDescripcion());
+    }
+
+    @Test
+    void nombreNuloSeRechaza() {
+        verificarRechazo(null, "5", "nombre", "El nombre del producto es obligatorio.");
+    }
 }

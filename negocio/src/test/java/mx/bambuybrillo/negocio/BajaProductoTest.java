@@ -102,4 +102,16 @@ class BajaProductoTest {
     void productoInexistenteSeRechaza() {
         verificarRechazo(99, "El producto a eliminar no existe.");
     }
+
+    @Test
+    void idNegativoSeRechaza() {
+        verificarRechazo(-5, "El producto a eliminar no existe.");
+    }
+
+    @Test
+    void productoDadoDeBajaYaNoSeEncuentra() {
+        baja.eliminar(1);
+        assertTrue(repositorio.buscarPorId(1).isEmpty());
+        assertTrue(repositorio.buscarPorId(2).isPresent());
+    }
 }
